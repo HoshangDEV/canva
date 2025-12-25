@@ -207,45 +207,31 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const updates: { id: string; changes: Partial<SlideElement> }[] = []
 
     selectedElements.forEach((element) => {
-      // Calculate the center point of the element
-      const centerX = element.x + element.width / 2
-      const centerY = element.y + element.height / 2
-      
-      let newCenterX = centerX
-      let newCenterY = centerY
+      let x = element.x
+      let y = element.y
 
       switch (alignment) {
         case 'left':
-          // Align left edge: center should be at width/2 from left edge
-          newCenterX = element.width / 2
+          x = 0
           break
         case 'center-h':
-          // Center horizontally
-          newCenterX = CANVAS_WIDTH / 2
+          x = (CANVAS_WIDTH - element.width) / 2
           break
         case 'right':
-          // Align right edge: center should be at CANVAS_WIDTH - width/2
-          newCenterX = CANVAS_WIDTH - element.width / 2
+          x = CANVAS_WIDTH - element.width
           break
         case 'top':
-          // Align top edge: center should be at height/2 from top
-          newCenterY = element.height / 2
+          y = 0
           break
         case 'center-v':
-          // Center vertically
-          newCenterY = CANVAS_HEIGHT / 2
+          y = (CANVAS_HEIGHT - element.height) / 2
           break
         case 'bottom':
-          // Align bottom edge: center should be at CANVAS_HEIGHT - height/2
-          newCenterY = CANVAS_HEIGHT - element.height / 2
+          y = CANVAS_HEIGHT - element.height
           break
       }
 
-      // Convert center coordinates back to top-left coordinates
-      const newX = newCenterX - element.width / 2
-      const newY = newCenterY - element.height / 2
-
-      updates.push({ id: element.id, changes: { x: newX, y: newY } })
+      updates.push({ id: element.id, changes: { x, y } })
     })
 
     get().updateElements(updates)
