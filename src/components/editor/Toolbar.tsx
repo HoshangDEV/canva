@@ -12,6 +12,7 @@ import {
   ZoomOut,
 } from 'lucide-react'
 import { AIDialog } from './AIDialog'
+import { ThemeToggle } from '../theme/theme-toggle'
 
 export function Toolbar() {
   const {
@@ -97,7 +98,7 @@ export function Toolbar() {
 
   return (
     <>
-      <div className="flex items-center gap-2 p-2 bg-white border-b border-gray-200">
+      <div className="flex items-center gap-2 p-2 bg-card border-b border-border">
         <Button
           variant="outline"
           size="sm"
@@ -117,7 +118,7 @@ export function Toolbar() {
           <Redo2 className="h-4 w-4" />
         </Button>
 
-        <div className="w-px h-6 bg-gray-300 mx-1" />
+        <div className="w-px h-6 bg-border mx-1" />
 
         <Button
           variant="outline"
@@ -128,14 +129,9 @@ export function Toolbar() {
           AI Prompt
         </Button>
 
-        <div className="w-px h-6 bg-gray-300 mx-1" />
+        <div className="w-px h-6 bg-border mx-1" />
 
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={zoomOut}
-          title="Zoom Out"
-        >
+        <Button variant="outline" size="sm" onClick={zoomOut} title="Zoom Out">
           <ZoomOut className="h-4 w-4" />
         </Button>
         <Button
@@ -146,16 +142,11 @@ export function Toolbar() {
         >
           {Math.round(zoom * 100)}%
         </Button>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={zoomIn}
-          title="Zoom In"
-        >
+        <Button variant="outline" size="sm" onClick={zoomIn} title="Zoom In">
           <ZoomIn className="h-4 w-4" />
         </Button>
 
-        <div className="w-px h-6 bg-gray-300 mx-1" />
+        <div className="w-px h-6 bg-border mx-1" />
 
         <Button variant="outline" size="sm" onClick={handleAddText}>
           <Type />
@@ -169,6 +160,8 @@ export function Toolbar() {
           <ImageIcon />
           Add Image
         </Button>
+
+        <ThemeToggle size={"icon-sm"} className='ms-auto' />
       </div>
 
       <AIDialog open={aiDialogOpen} onOpenChange={setAIDialogOpen} />

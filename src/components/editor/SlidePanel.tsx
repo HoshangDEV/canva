@@ -9,8 +9,8 @@ export function SlidePanel() {
     useEditorStore()
 
   return (
-    <div className="w-48 bg-white border-r border-gray-200 flex flex-col">
-      <div className="p-2 border-b border-gray-200">
+    <div className="w-48 bg-card border-r border-border flex flex-col">
+      <div className="p-2 border-b border-border">
         <Button
           variant="outline"
           size="sm"
@@ -27,12 +27,12 @@ export function SlidePanel() {
             key={slide.id}
             className={`group relative cursor-pointer rounded border-2 transition-colors ${
               index === currentSlideIndex
-                ? 'border-blue-500 bg-blue-50'
-                : 'border-gray-200 hover:border-gray-300'
+                ? 'border-primary bg-accent'
+                : 'border-border hover:border-border'
             }`}
             onClick={() => setCurrentSlide(index)}
           >
-            <div className="aspect-video bg-white rounded overflow-hidden relative">
+            <div className="aspect-video bg-card rounded overflow-hidden relative">
               {/* Thumbnail preview */}
               <div
                 className="absolute inset-0"
@@ -81,7 +81,7 @@ export function SlidePanel() {
                     )}
                     {element.type === 'image' && (
                       <div
-                        className="bg-gray-200 border border-gray-300"
+                        className="bg-muted border border-border"
                         style={{
                           borderRadius: `${(element.borderRadius || 0) * CANVAS_CONFIG.thumbnailScale}px`,
                           width: '100%',
@@ -98,20 +98,20 @@ export function SlidePanel() {
                 ))}
               </div>
             </div>
-            <div className="p-2 text-xs text-center text-gray-600">
+            <div className="p-2 text-xs text-center text-muted-foreground">
               Slide {index + 1}
             </div>
             {slides.length > 1 && (
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-red-100 transition-opacity"
+                className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 transition-opacity"
                 onClick={(e) => {
                   e.stopPropagation()
                   deleteSlide(index)
                 }}
               >
-                <Trash2 className="h-3 w-3 text-red-600" />
+                <Trash2 className="h-3 w-3 text-destructive" />
               </Button>
             )}
           </div>

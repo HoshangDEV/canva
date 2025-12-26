@@ -15,7 +15,7 @@ export function Editor() {
   }, [saveSnapshot])
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
+    <div className="flex flex-col h-screen bg-muted">
       <Toolbar />
       <div className="flex flex-1 overflow-hidden">
         <SlidePanel />

@@ -300,10 +300,10 @@ export function Canvas() {
   return (
     <div
       ref={containerRef}
-      className="flex-1 flex items-center justify-center p-8 overflow-auto bg-gray-100"
+      className="flex-1 flex items-center justify-center p-8 overflow-auto bg-muted"
     >
       <div
-        className="bg-white shadow-lg"
+        className="bg-card shadow-lg"
         style={{
           transform: `scale(${zoom})`,
           transformOrigin: 'center center',

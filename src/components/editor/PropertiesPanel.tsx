@@ -58,15 +58,15 @@ export function PropertiesPanel() {
 
   if (selectedElements.length === 0) {
     return (
-      <div className="w-64 bg-white border-l border-gray-200 p-4">
-        <p className="text-sm text-gray-500">Select an element to edit</p>
+      <div className="w-64 bg-card border-l border-border p-4">
+        <p className="text-sm text-muted-foreground">Select an element to edit</p>
       </div>
     )
   }
 
   if (selectedElements.length > 1) {
     return (
-      <div className="w-64 bg-white border-l border-gray-200 p-4 overflow-y-auto">
+      <div className="w-64 bg-card border-l border-border p-4 overflow-y-auto">
         <h3 className="font-semibold mb-4">
           {selectedElements.length} Elements
         </h3>
@@ -205,7 +205,7 @@ export function PropertiesPanel() {
   const element = selectedElements[0]
 
   return (
-    <div className="w-64 bg-white border-l border-gray-200 p-4 overflow-y-auto">
+    <div className="w-64 bg-card border-l border-border p-4 overflow-y-auto">
       <h3 className="font-semibold mb-4 capitalize">
         {element.type} Properties
       </h3>

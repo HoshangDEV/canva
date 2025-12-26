@@ -3,6 +3,9 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanStackDevtools } from '@tanstack/react-devtools'
 
 import appCss from '../styles.css?url'
+import { ThemeProvider } from '@/components/theme/theme-provider'
+import { getThemeServerFn } from '@/lib/theme'
+import { Toaster } from '@/components/ui/sonner'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -26,17 +29,23 @@ export const Route = createRootRoute({
     ],
   }),
 
+  loader: () => getThemeServerFn(),
   shellComponent: RootDocument,
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const theme = Route.useLoaderData()
+
   return (
-    <html lang="en">
+    <html suppressHydrationWarning lang="en" className={theme}>
       <head>
         <HeadContent />
       </head>
       <body>
-        {children}
+        <ThemeProvider theme={theme}>
+          {children}
+          <Toaster position="top-center" richColors closeButton theme={theme} />
+        </ThemeProvider>
         <TanStackDevtools
           config={{
             position: 'bottom-right',
