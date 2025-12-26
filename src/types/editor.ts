@@ -29,6 +29,7 @@ export interface SlideElement {
   fontWeight?: 'normal' | 'bold'
   fontStyle?: 'normal' | 'italic'
   textAlign?: 'left' | 'center' | 'right' | 'justify'
+  textDirection?: 'rtl' | 'ltr'
   // Shape/Image properties
   color?: string
   borderRadius?: number

@@ -267,7 +267,7 @@ export function Canvas() {
 
     canvas.renderAll()
     isUpdatingRef.current = false
-  }, [currentSlide, selectedElementIds])
+  }, [slides, currentSlideIndex, selectedElementIds])
 
   // Handle keyboard delete
   useEffect(() => {
@@ -321,6 +321,9 @@ function createFabricObject(
 ): FabricObject | null {
   switch (element.type) {
     case 'text': {
+      // Determine direction (use textDirection if set, otherwise auto-detect)
+      const direction = element.textDirection || (isRTLText(element.content) ? 'rtl' : 'ltr')
+      
       const text = new Textbox(element.content || 'Text', {
         left: element.x,
         top: element.y,
@@ -332,15 +335,11 @@ function createFabricObject(
         fontWeight: element.fontWeight || 'normal',
         fontStyle: element.fontStyle || 'normal',
         textAlign: element.textAlign || 'left',
+        direction: direction, // Set direction in constructor
         splitByGrapheme: true, // Better text wrapping support
         lockScalingFlip: true, // Prevent flipping when resizing
         lockUniScaling: false, // Allow independent width/height scaling
       })
-
-      // Set direction for RTL text
-      if (isRTLText(element.content)) {
-        text.set('direction', 'rtl')
-      }
 
       // Set fixed dimensions - override auto-height calculation
       const fixedHeight = element.height || 50

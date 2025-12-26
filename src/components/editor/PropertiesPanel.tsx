@@ -33,6 +33,8 @@ import {
   ChevronUp,
   Italic,
   Move,
+  PilcrowLeft,
+  PilcrowRight,
   RotateCcw,
   Trash2,
 } from 'lucide-react'
@@ -414,7 +416,10 @@ export function PropertiesPanel() {
                   updateElement(element.id, { content: e.target.value })
                 }
                 className="mt-1"
-                dir={isRTLText(element.content) ? 'rtl' : 'ltr'}
+                dir={
+                  element.textDirection ||
+                  (isRTLText(element.content) ? 'rtl' : 'ltr')
+                }
               />
             </div>
 
@@ -495,7 +500,7 @@ export function PropertiesPanel() {
 
             <div>
               <Label className="mb-2 block">Text Format</Label>
-              <div className="flex gap-2">
+              <div className="grid grid-cols-4 gap-2">
                 <Button
                   variant={
                     element.fontWeight === 'bold' ? 'default' : 'outline'
@@ -525,6 +530,40 @@ export function PropertiesPanel() {
                   title="Italic"
                 >
                   <Italic />
+                </Button>
+                <Button
+                  variant={
+                    (element.textDirection ||
+                      (isRTLText(element.content) ? 'rtl' : 'ltr')) === 'ltr'
+                      ? 'default'
+                      : 'outline'
+                  }
+                  size="sm"
+                  onClick={() =>
+                    updateElement(element.id, {
+                      textDirection: 'ltr',
+                    })
+                  }
+                  title="Left-to-Right"
+                >
+                  <PilcrowRight />
+                </Button>
+                <Button
+                  variant={
+                    (element.textDirection ||
+                      (isRTLText(element.content) ? 'rtl' : 'ltr')) === 'rtl'
+                      ? 'default'
+                      : 'outline'
+                  }
+                  size="sm"
+                  onClick={() =>
+                    updateElement(element.id, {
+                      textDirection: 'rtl',
+                    })
+                  }
+                  title="Right-to-Left"
+                >
+                  <PilcrowLeft />
                 </Button>
               </div>
             </div>
