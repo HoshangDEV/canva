@@ -17,6 +17,7 @@ interface EditorState {
   historyIndex: number
   maxHistorySize: number
   zoom: number
+  activePanel: 'slides' | 'layers'
 
   // Actions
   setSlides: (slides: Slide[]) => void
@@ -45,6 +46,7 @@ interface EditorState {
   zoomIn: () => void
   zoomOut: () => void
   resetZoom: () => void
+  setActivePanel: (panel: 'slides' | 'layers') => void
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -60,6 +62,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   historyIndex: -1,
   maxHistorySize: 50,
   zoom: 1,
+  activePanel: 'slides',
 
   setSlides: (slides) => {
     set({ slides })
@@ -683,6 +686,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   resetZoom: () => {
     set({ zoom: 1 })
+  },
+
+  setActivePanel: (panel) => {
+    set({ activePanel: panel })
   },
 }))
 

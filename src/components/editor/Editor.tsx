@@ -3,11 +3,13 @@ import { useEditorStore } from '@/store/editor-store'
 import { Toolbar } from './Toolbar'
 import { Canvas } from './canvas'
 import { SlidePanel } from './SlidePanel'
+import { LayersPanel } from './LayersPanel'
+import { LeftSidebar } from './LeftSidebar'
 import { PropertiesPanel } from './PropertiesPanel'
 import { AIDialog } from './AIDialog'
 
 export function Editor() {
-  const { saveSnapshot } = useEditorStore()
+  const { saveSnapshot, activePanel } = useEditorStore()
 
   // Save initial snapshot
   useEffect(() => {
@@ -18,7 +20,8 @@ export function Editor() {
     <div className="flex flex-col h-screen bg-muted">
       <Toolbar />
       <div className="flex flex-1 overflow-hidden">
-        <SlidePanel />
+        <LeftSidebar />
+        {activePanel === 'slides' ? <SlidePanel /> : <LayersPanel />}
         <Canvas />
         <PropertiesPanel />
       </div>
