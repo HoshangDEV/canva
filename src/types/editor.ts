@@ -12,6 +12,9 @@ export type AlignmentType =
   | 'bottom-center'
   | 'bottom-right'
 
+export type XAxisAlignmentType = 'left' | 'center' | 'right'
+export type YAxisAlignmentType = 'top' | 'center' | 'bottom'
+
 // Slide element interface
 export interface SlideElement {
   id: string

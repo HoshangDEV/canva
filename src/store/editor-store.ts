@@ -3,6 +3,8 @@ import type {
   Slide,
   SlideElement,
   AlignmentType,
+  XAxisAlignmentType,
+  YAxisAlignmentType,
   EditorStateSnapshot,
 } from '@/types/editor'
 import { CANVAS_CONFIG } from '@/constants'
@@ -28,6 +30,8 @@ interface EditorState {
   addSlide: () => void
   deleteSlide: (index: number) => void
   alignElements: (alignment: AlignmentType) => void
+  alignElementsX: (alignment: XAxisAlignmentType) => void
+  alignElementsY: (alignment: YAxisAlignmentType) => void
   bringToFront: () => void
   sendToBack: () => void
   bringForward: () => void
@@ -305,6 +309,150 @@ export const useEditorStore = create<EditorState>((set, get) => ({
         id: element.id, 
         changes: { 
           x: Math.round(newX * 100) / 100,
+          y: Math.round(newY * 100) / 100,
+        } 
+      })
+    })
+
+    get().updateElements(updates)
+    get().saveSnapshot()
+  },
+
+  alignElementsX: (alignment) => {
+    const { selectedElementIds } = get()
+    if (selectedElementIds.length === 0) return
+
+    const state = get()
+    const currentSlide = state.slides[state.currentSlideIndex]
+    const selectedElements = currentSlide.elements.filter((el) =>
+      selectedElementIds.includes(el.id)
+    )
+
+    if (selectedElements.length === 0) return
+
+    const updates: { id: string; changes: Partial<SlideElement> }[] = []
+
+    selectedElements.forEach((element) => {
+      const rotation = element.rotation || 0
+      const radians = (rotation * Math.PI) / 180
+
+      const width = element.width
+      const height = element.height
+      const halfWidth = width / 2
+      const halfHeight = height / 2
+
+      const centerX = element.x
+      const centerY = element.y
+
+      const corners = [
+        { x: -halfWidth, y: -halfHeight },
+        { x: halfWidth, y: -halfHeight },
+        { x: halfWidth, y: halfHeight },
+        { x: -halfWidth, y: halfHeight },
+      ]
+
+      const cos = Math.cos(radians)
+      const sin = Math.sin(radians)
+      const rotatedCorners = corners.map(corner => ({
+        x: centerX + (corner.x * cos - corner.y * sin),
+        y: centerY + (corner.x * sin + corner.y * cos),
+      }))
+
+      const minX = Math.min(...rotatedCorners.map(c => c.x))
+      const maxX = Math.max(...rotatedCorners.map(c => c.x))
+
+      const leftOffset = centerX - minX
+      const rightOffset = maxX - centerX
+
+      let newX = element.x
+
+      switch (alignment) {
+        case 'left':
+          newX = leftOffset
+          break
+        case 'center':
+          newX = CANVAS_CONFIG.width / 2
+          break
+        case 'right':
+          newX = CANVAS_CONFIG.width - rightOffset
+          break
+      }
+
+      updates.push({ 
+        id: element.id, 
+        changes: { 
+          x: Math.round(newX * 100) / 100,
+        } 
+      })
+    })
+
+    get().updateElements(updates)
+    get().saveSnapshot()
+  },
+
+  alignElementsY: (alignment) => {
+    const { selectedElementIds } = get()
+    if (selectedElementIds.length === 0) return
+
+    const state = get()
+    const currentSlide = state.slides[state.currentSlideIndex]
+    const selectedElements = currentSlide.elements.filter((el) =>
+      selectedElementIds.includes(el.id)
+    )
+
+    if (selectedElements.length === 0) return
+
+    const updates: { id: string; changes: Partial<SlideElement> }[] = []
+
+    selectedElements.forEach((element) => {
+      const rotation = element.rotation || 0
+      const radians = (rotation * Math.PI) / 180
+
+      const width = element.width
+      const height = element.height
+      const halfWidth = width / 2
+      const halfHeight = height / 2
+
+      const centerX = element.x
+      const centerY = element.y
+
+      const corners = [
+        { x: -halfWidth, y: -halfHeight },
+        { x: halfWidth, y: -halfHeight },
+        { x: halfWidth, y: halfHeight },
+        { x: -halfWidth, y: halfHeight },
+      ]
+
+      const cos = Math.cos(radians)
+      const sin = Math.sin(radians)
+      const rotatedCorners = corners.map(corner => ({
+        x: centerX + (corner.x * cos - corner.y * sin),
+        y: centerY + (corner.x * sin + corner.y * cos),
+      }))
+
+      const minY = Math.min(...rotatedCorners.map(c => c.y))
+      const maxY = Math.max(...rotatedCorners.map(c => c.y))
+
+      const topOffset = centerY - minY
+      const bottomOffset = maxY - centerY
+
+      let newY = element.y
+
+      switch (alignment) {
+        case 'top':
+          newY = topOffset
+          break
+        case 'center':
+          newY = CANVAS_CONFIG.height / 2
+          break
+        case 'bottom':
+          newY = CANVAS_CONFIG.height - bottomOffset
+          break
+      }
+
+      updates.push({ 
+        id: element.id, 
+        changes: { 
           y: Math.round(newY * 100) / 100,
         } 
       })

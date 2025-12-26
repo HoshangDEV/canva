@@ -38,6 +38,14 @@ import {
   RotateCcw,
   Trash2,
 } from 'lucide-react'
+import {
+  IconLayoutAlignBottom,
+  IconLayoutAlignCenter,
+  IconLayoutAlignLeft,
+  IconLayoutAlignMiddle,
+  IconLayoutAlignRight,
+  IconLayoutAlignTop,
+} from '@tabler/icons-react'
 
 export function PropertiesPanel() {
   const {
@@ -47,6 +55,8 @@ export function PropertiesPanel() {
     updateElement,
     deleteSelectedElements,
     alignElements,
+    alignElementsX,
+    alignElementsY,
     bringToFront,
     sendToBack,
     bringForward,
@@ -77,10 +87,10 @@ export function PropertiesPanel() {
 
         <div className="space-y-4">
           <div>
-            <Label className="mb-2 block">Alignment</Label>
+            <Label className="mb-2 block">Normal Alignment</Label>
             <div className="grid grid-cols-3 gap-2">
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={() => alignElements('top-left')}
                 title="Top Left"
@@ -150,6 +160,66 @@ export function PropertiesPanel() {
                 title="Bottom Right"
               >
                 <ArrowDownRight />
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label className="mb-2 block">X-Axis Alignment</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElementsX('left')}
+                title="Align Left"
+              >
+                <IconLayoutAlignLeft />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElementsX('center')}
+                title="Align Center"
+              >
+                <IconLayoutAlignCenter />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElementsX('right')}
+                title="Align Right"
+              >
+                <IconLayoutAlignRight />
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label className="mb-2 block">Y-Axis Alignment</Label>
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElementsY('top')}
+                title="Align Top"
+              >
+                <IconLayoutAlignTop />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElementsY('center')}
+                title="Align Center"
+              >
+                <IconLayoutAlignCenter />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElementsY('bottom')}
+                title="Align Bottom"
+              >
+                <IconLayoutAlignBottom />
               </Button>
             </div>
           </div>
@@ -287,11 +357,63 @@ export function PropertiesPanel() {
         </div>
 
         {/* Alignment */}
-        <div>
-          <Label className="mb-2 block">Alignment</Label>
+        <div className="space-y-2">
+          <Label className="block">Alignment</Label>
           <div className="grid grid-cols-3 gap-2">
             <Button
               variant="outline"
+              size="sm"
+              onClick={() => alignElementsX('left')}
+              title="Align Left"
+            >
+              <IconLayoutAlignLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alignElementsX('center')}
+              title="Align Center"
+            >
+              <IconLayoutAlignCenter />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alignElementsX('right')}
+              title="Align Right"
+            >
+              <IconLayoutAlignRight />
+            </Button>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alignElementsY('top')}
+              title="Align Top"
+            >
+              <IconLayoutAlignTop />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alignElementsY('center')}
+              title="Align Center"
+            >
+              <IconLayoutAlignMiddle />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alignElementsY('bottom')}
+              title="Align Bottom"
+            >
+              <IconLayoutAlignBottom />
+            </Button>
+          </div>
+          <div className="grid grid-cols-3 border rounded-lg">
+            <Button
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('top-left')}
               title="Top Left"
@@ -299,7 +421,7 @@ export function PropertiesPanel() {
               <ArrowUpLeft />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('top-center')}
               title="Top Center"
@@ -307,7 +429,7 @@ export function PropertiesPanel() {
               <ArrowUp />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('top-right')}
               title="Top Right"
@@ -315,7 +437,7 @@ export function PropertiesPanel() {
               <ArrowUpRight />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('mid-left')}
               title="Mid Left"
@@ -323,7 +445,7 @@ export function PropertiesPanel() {
               <ArrowLeft />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('mid-center')}
               title="Mid Center"
@@ -331,7 +453,7 @@ export function PropertiesPanel() {
               <Move />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('mid-right')}
               title="Mid Right"
@@ -339,7 +461,7 @@ export function PropertiesPanel() {
               <ArrowRight />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('bottom-left')}
               title="Bottom Left"
@@ -347,7 +469,7 @@ export function PropertiesPanel() {
               <ArrowDownLeft />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('bottom-center')}
               title="Bottom Center"
@@ -355,7 +477,7 @@ export function PropertiesPanel() {
               <ArrowDown />
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => alignElements('bottom-right')}
               title="Bottom Right"
