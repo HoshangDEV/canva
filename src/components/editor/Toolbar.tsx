@@ -106,7 +106,7 @@ export function Toolbar() {
           disabled={!canUndo()}
           title="Undo (Cmd+Z / Ctrl+Z)"
         >
-          <Undo2 className="h-4 w-4" />
+          <Undo2 />
         </Button>
         <Button
           variant="outline"
@@ -115,7 +115,7 @@ export function Toolbar() {
           disabled={!canRedo()}
           title="Redo (Cmd+Shift+Z / Ctrl+Y)"
         >
-          <Redo2 className="h-4 w-4" />
+          <Redo2 />
         </Button>
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -132,7 +132,7 @@ export function Toolbar() {
         <div className="w-px h-6 bg-border mx-1" />
 
         <Button variant="outline" size="sm" onClick={zoomOut} title="Zoom Out">
-          <ZoomOut className="h-4 w-4" />
+          <ZoomOut />
         </Button>
         <Button
           variant="outline"
@@ -143,7 +143,7 @@ export function Toolbar() {
           {Math.round(zoom * 100)}%
         </Button>
         <Button variant="outline" size="sm" onClick={zoomIn} title="Zoom In">
-          <ZoomIn className="h-4 w-4" />
+          <ZoomIn />
         </Button>
 
         <div className="w-px h-6 bg-border mx-1" />
@@ -161,7 +161,7 @@ export function Toolbar() {
           Add Image
         </Button>
 
-        <ThemeToggle size={"icon-sm"} className='ms-auto' />
+        <ThemeToggle size={'icon-sm'} className="ms-auto" />
       </div>
 
       <AIDialog open={aiDialogOpen} onOpenChange={setAIDialogOpen} />

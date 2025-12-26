@@ -135,4 +135,29 @@ code {
   body {
     @apply bg-background text-foreground;
   }
+  button {
+    @apply cursor-pointer;
+  }
+    /* Scrollbar styling for light mode */
+  :root {
+    scrollbar-color: var(--primary) var(--background);
+  }
+
+  :root::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  :root::-webkit-scrollbar-track {
+    background: var(--background);
+  }
+
+  :root::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 6px;
+  }
+
+  :root::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark);
+  }
 }

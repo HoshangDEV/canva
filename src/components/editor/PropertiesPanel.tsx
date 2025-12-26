@@ -59,7 +59,9 @@ export function PropertiesPanel() {
   if (selectedElements.length === 0) {
     return (
       <div className="w-64 bg-card border-l border-border p-4">
-        <p className="text-sm text-muted-foreground">Select an element to edit</p>
+        <p className="text-sm text-muted-foreground">
+          Select an element to edit
+        </p>
       </div>
     )
   }
@@ -194,7 +196,7 @@ export function PropertiesPanel() {
             className="w-full"
             onClick={deleteSelectedElements}
           >
-            <Trash2 className="h-4 w-4 mr-2" />
+            <Trash2 />
             Delete Selected
           </Button>
         </div>
@@ -679,7 +681,7 @@ export function PropertiesPanel() {
           className="w-full"
           onClick={() => deleteSelectedElements()}
         >
-          <Trash2 className="h-4 w-4 mr-2" />
+          <Trash2 />
           Delete
         </Button>
       </div>

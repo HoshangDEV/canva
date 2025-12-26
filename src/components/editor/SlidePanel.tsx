@@ -1,8 +1,7 @@
 import { useEditorStore } from '@/store/editor-store'
 import { Button } from '@/components/ui/button'
 import { Plus, Trash2 } from 'lucide-react'
-import { isRTLText } from '@/lib/utils'
-import { CANVAS_CONFIG } from '@/constants'
+import { cn } from '@/lib/utils'
 
 export function SlidePanel() {
   const { slides, currentSlideIndex, setCurrentSlide, addSlide, deleteSlide } =
@@ -17,7 +16,7 @@ export function SlidePanel() {
           className="w-full"
           onClick={addSlide}
         >
-          <Plus className="h-4 w-4 mr-2" />
+          <Plus />
           Add Slide
         </Button>
       </div>
@@ -25,81 +24,18 @@ export function SlidePanel() {
         {slides.map((slide, index) => (
           <div
             key={slide.id}
-            className={`group relative cursor-pointer rounded border-2 transition-colors ${
+            className={cn(
+              'group relative cursor-pointer rounded border-2 transition-colors',
               index === currentSlideIndex
                 ? 'border-primary bg-accent'
-                : 'border-border hover:border-border'
-            }`}
+                : 'border-border hover:border-border',
+            )}
             onClick={() => setCurrentSlide(index)}
           >
-            <div className="aspect-video bg-card rounded overflow-hidden relative">
-              {/* Thumbnail preview */}
-              <div
-                className="absolute inset-0"
-                style={{
-                  transform: `scale(${CANVAS_CONFIG.thumbnailScale})`,
-                  transformOrigin: 'top left',
-                  width: `${CANVAS_CONFIG.width}px`,
-                  height: `${CANVAS_CONFIG.height}px`,
-                }}
-              >
-                {slide.elements.map((element) => (
-                  <div
-                    key={element.id}
-                    className="absolute"
-                    style={{
-                      left: `${element.x}px`,
-                      top: `${element.y}px`,
-                      width: `${element.width}px`,
-                      height: `${element.height}px`,
-                      transform: `rotate(${element.rotation}deg)`,
-                    }}
-                  >
-                    {element.type === 'text' && (
-                      <div
-                        className="text-xs whitespace-nowrap overflow-hidden"
-                        style={{
-                          fontSize: `${(element.fontSize || 16) * CANVAS_CONFIG.thumbnailScale}px`,
-                          color: element.fontColor || '#000000',
-                          textAlign: element.textAlign || 'left',
-                          direction: isRTLText(element.content) ? 'rtl' : 'ltr',
-                        }}
-                      >
-                        {element.content || 'Text'}
-                      </div>
-                    )}
-                    {element.type === 'shape' && (
-                      <div
-                        className="border"
-                        style={{
-                          backgroundColor: element.color || '#3b82f6',
-                          borderRadius: `${(element.borderRadius || 0) * CANVAS_CONFIG.thumbnailScale}px`,
-                          width: '100%',
-                          height: '100%',
-                        }}
-                      />
-                    )}
-                    {element.type === 'image' && (
-                      <div
-                        className="bg-muted border border-border"
-                        style={{
-                          borderRadius: `${(element.borderRadius || 0) * CANVAS_CONFIG.thumbnailScale}px`,
-                          width: '100%',
-                          height: '100%',
-                          backgroundImage: element.imageUrl
-                            ? `url(${element.imageUrl})`
-                            : undefined,
-                          backgroundSize: 'cover',
-                          backgroundPosition: 'center',
-                        }}
-                      />
-                    )}
-                  </div>
-                ))}
+            <div className="aspect-video bg-card rounded flex items-center justify-center">
+              <div className="text-2xl font-semibold text-muted-foreground">
+                {index + 1}
               </div>
-            </div>
-            <div className="p-2 text-xs text-center text-muted-foreground">
-              Slide {index + 1}
             </div>
             {slides.length > 1 && (
               <Button
