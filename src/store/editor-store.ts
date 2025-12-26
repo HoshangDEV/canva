@@ -6,6 +6,7 @@ import type {
   XAxisAlignmentType,
   YAxisAlignmentType,
   EditorStateSnapshot,
+  EditorExportData,
 } from '@/types/editor'
 import { CANVAS_CONFIG } from '@/constants'
 
@@ -47,6 +48,8 @@ interface EditorState {
   zoomOut: () => void
   resetZoom: () => void
   setActivePanel: (panel: 'slides' | 'layers') => void
+  exportCanvas: () => void
+  importCanvas: (data: EditorExportData) => void
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -690,6 +693,62 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
   setActivePanel: (panel) => {
     set({ activePanel: panel })
+  },
+
+  exportCanvas: () => {
+    const { slides, currentSlideIndex } = get()
+    
+    const exportData: EditorExportData = {
+      slides: JSON.parse(JSON.stringify(slides)), // Deep clone
+      currentSlideIndex,
+      version: '1.0.0',
+    }
+
+    const jsonString = JSON.stringify(exportData, null, 2)
+    const blob = new Blob([jsonString], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `canva-export-${Date.now()}.json`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+  },
+
+  importCanvas: (data: EditorExportData) => {
+    // Validate the imported data
+    if (!data.slides || !Array.isArray(data.slides)) {
+      throw new Error('Invalid import data: slides must be an array')
+    }
+
+    // Validate slides structure
+    for (const slide of data.slides) {
+      if (!slide.id || !Array.isArray(slide.elements)) {
+        throw new Error('Invalid import data: each slide must have id and elements array')
+      }
+    }
+
+    // Ensure at least one slide exists
+    if (data.slides.length === 0) {
+      throw new Error('Invalid import data: at least one slide is required')
+    }
+
+    // Validate currentSlideIndex
+    const validIndex = Math.max(0, Math.min(data.currentSlideIndex || 0, data.slides.length - 1))
+
+    // Reset state and load imported data
+    set({
+      slides: JSON.parse(JSON.stringify(data.slides)), // Deep clone
+      currentSlideIndex: validIndex,
+      selectedElementIds: [],
+      history: [],
+      historyIndex: -1,
+      zoom: 1,
+    })
+
+    // Save initial snapshot after import
+    get().saveSnapshot()
   },
 }))
 

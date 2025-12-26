@@ -53,3 +53,10 @@ export interface EditorStateSnapshot {
   selectedElementIds: string[]
 }
 
+// Export data format for saving/loading canvas
+export interface EditorExportData {
+  slides: Slide[]
+  currentSlideIndex: number
+  version: string // For future compatibility checks
+}
+

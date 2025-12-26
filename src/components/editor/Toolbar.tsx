@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useEditorStore } from '@/store/editor-store'
 import { Button } from '@/components/ui/button'
+import type { EditorExportData } from '@/types/editor'
+import { toast } from 'sonner'
 import {
   Undo2,
   Redo2,
@@ -10,6 +12,8 @@ import {
   Image as ImageIcon,
   ZoomIn,
   ZoomOut,
+  Download,
+  Upload,
 } from 'lucide-react'
 import { AIDialog } from './AIDialog'
 import { ThemeToggle } from '../theme/theme-toggle'
@@ -25,9 +29,12 @@ export function Toolbar() {
     zoomIn,
     zoomOut,
     resetZoom,
+    exportCanvas,
+    importCanvas,
   } = useEditorStore()
 
   const [aiDialogOpen, setAIDialogOpen] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -96,6 +103,43 @@ export function Toolbar() {
     })
   }
 
+  const handleExport = () => {
+    exportCanvas()
+  }
+
+  const handleImportClick = () => {
+    fileInputRef.current?.click()
+  }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const text = e.target?.result as string
+        const data: EditorExportData = JSON.parse(text)
+        importCanvas(data)
+        toast.success('Canvas imported successfully!')
+      } catch (error) {
+        console.error('Failed to import canvas:', error)
+        toast.error(
+          `Failed to import canvas: ${error instanceof Error ? error.message : 'Invalid file format'}`
+        )
+      }
+    }
+    reader.onerror = () => {
+      toast.error('Failed to read file')
+    }
+    reader.readAsText(file)
+    
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
   return (
     <>
       <div className="flex items-center gap-2 p-2 bg-card border-b border-border">
@@ -145,6 +189,24 @@ export function Toolbar() {
         <Button variant="outline" size="sm" onClick={zoomIn} title="Zoom In">
           <ZoomIn />
         </Button>
+
+        <div className="w-px h-6 bg-border mx-1" />
+
+        <Button variant="outline" size="sm" onClick={handleExport} title="Export Canvas">
+          <Download />
+          Export
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleImportClick} title="Import Canvas">
+          <Upload />
+          Import
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
 
         <div className="w-px h-6 bg-border mx-1" />
 
