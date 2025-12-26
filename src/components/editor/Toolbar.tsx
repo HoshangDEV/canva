@@ -125,35 +125,35 @@ export function Toolbar() {
           size="sm"
           onClick={() => setAIDialogOpen(true)}
         >
-          <Sparkles className="h-4 w-4 mr-2" />
+          <Sparkles />
           AI Prompt
         </Button>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
         <Button variant="outline" size="sm" onClick={handleAddText}>
-          <Type className="h-4 w-4 mr-2" />
+          <Type />
           Add Text
         </Button>
         <Button variant="outline" size="sm" onClick={handleAddShape}>
-          <Square className="h-4 w-4 mr-2" />
+          <Square />
           Add Shape
         </Button>
         <Button variant="outline" size="sm" onClick={handleAddImage}>
-          <ImageIcon className="h-4 w-4 mr-2" />
+          <ImageIcon />
           Add Image
         </Button>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
         <Button variant="outline" size="sm" onClick={zoomOut}>
-          <ZoomOut className="h-4 w-4" />
+          <ZoomOut />
         </Button>
         <Button variant="outline" size="sm" onClick={resetZoom}>
-          <RotateCcw className="h-4 w-4" />
+          <RotateCcw />
         </Button>
         <Button variant="outline" size="sm" onClick={zoomIn}>
-          <ZoomIn className="h-4 w-4" />
+          <ZoomIn />
         </Button>
         <div className="px-2 text-sm text-gray-600 min-w-[60px] text-center">
           {Math.round(zoom * 100)}%
@@ -164,4 +164,3 @@ export function Toolbar() {
     </>
   )
 }
-

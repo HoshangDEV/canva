@@ -143,27 +143,37 @@ export function Canvas() {
       const obj = e.target
       if (!obj) return
 
-      const bounds = {
-        left: 0,
-        top: 0,
-        right: CANVAS_CONFIG.width,
-        bottom: CANVAS_CONFIG.height,
-      }
+      // Canvas bounds
+      const canvasWidth = CANVAS_CONFIG.width
+      const canvasHeight = CANVAS_CONFIG.height
 
+      // Update coordinates for accurate bounds checking
       obj.setCoords()
 
-      const rect = obj.getBoundingRect()
-      if (rect.left < bounds.left) {
-        obj.set('left', bounds.left)
-      }
-      if (rect.left + rect.width > bounds.right) {
-        obj.set('left', bounds.right - rect.width)
-      }
-      if (rect.top < bounds.top) {
-        obj.set('top', bounds.top)
-      }
-      if (rect.top + rect.height > bounds.bottom) {
-        obj.set('top', bounds.bottom - rect.height)
+      // Get the bounding box accounting for rotation
+      const boundingRect = obj.getBoundingRect()
+
+      // Calculate how much the bounding rect extends beyond canvas bounds
+      const overflowLeft = Math.min(0, boundingRect.left)
+      const overflowRight = Math.max(0, (boundingRect.left + boundingRect.width) - canvasWidth)
+      const overflowTop = Math.min(0, boundingRect.top)
+      const overflowBottom = Math.max(0, (boundingRect.top + boundingRect.height) - canvasHeight)
+
+      // Calculate the adjustment needed for the bounding rect
+      const boundingDeltaX = overflowLeft + overflowRight
+      const boundingDeltaY = overflowTop + overflowBottom
+
+      // Apply the constraint only if there's overflow
+      if (boundingDeltaX !== 0 || boundingDeltaY !== 0) {
+        // For rotated objects, we need to translate the bounding rect adjustment
+        // to the object origin adjustment. The relationship depends on rotation.
+        // For simplicity, we apply the same delta to the object origin.
+        // This works because setCoords() will recalculate the bounding rect correctly.
+        obj.set({
+          left: (obj.left || 0) + boundingDeltaX,
+          top: (obj.top || 0) + boundingDeltaY,
+        })
+        obj.setCoords()
       }
     })
 

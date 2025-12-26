@@ -70,7 +70,7 @@ External APIs (Google Gemini, Unsplash)
 
 ### Core Data Structures
 
-**Canvas Dimensions:** 960x540 pixels (16:9 aspect ratio)
+**Canvas Dimensions:** 1280x720 pixels (16:9 aspect ratio)
 
 **Element Types:**
 - `text` - Text elements with font properties (content, fontSize, fontColor, fontFamily, textAlign)
@@ -140,7 +140,7 @@ The editor store is the single source of truth for all editor state. Key concept
 - Syncs Zustand store state → Fabric objects on every render
 - Handles object selection, movement, resizing, rotation
 - Converts Fabric scale transforms to width/height updates
-- Enforces canvas boundaries (elements can't move outside 960x540)
+- Enforces canvas boundaries (elements can't move outside 1280x720)
 
 **Event Handlers:**
 - `object:modified` - Updates store when element is modified

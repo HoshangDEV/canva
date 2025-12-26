@@ -1,7 +1,7 @@
 import { createServerFn } from '@tanstack/react-start'
 import { GoogleGenAI } from '@google/genai'
-import { readFile } from 'fs/promises'
-import { join } from 'path'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import type { Slide } from '@/types/editor'
 
 interface GeneratePresentationInput {
@@ -57,7 +57,7 @@ function replaceImagePlaceholders(slides: Slide[]): Promise<Slide[]> {
         getUnsplashImage(query).catch((error) => {
           console.error(`Failed to fetch image for query "${query}":`, error)
           return '' // Return empty string on error
-        })
+        }),
       )
     }
   })
@@ -84,9 +84,9 @@ function replaceImagePlaceholders(slides: Slide[]): Promise<Slide[]> {
             return { ...element, imageUrl }
           }
           return element
-        })
+        }),
       ),
-    }))
+    })),
   )
 }
 
@@ -103,14 +103,19 @@ export const generatePresentation = createServerFn({
     // Load AI instructions from prompt file
     let promptInstructions = ''
     try {
-      const promptPath = join(process.cwd(), 'src', 'prompts', 'generate-presentation.md')
+      const promptPath = join(
+        process.cwd(),
+        'src',
+        'prompts',
+        'generate-presentation.md',
+      )
       promptInstructions = await readFile(promptPath, 'utf-8')
     } catch (error) {
       console.error('Failed to read prompt file:', error)
       // Fallback to basic instructions
       promptInstructions = `You are an AI assistant that generates presentation slides in JSON format.
 Each slide should have elements (text, shape, image).
-Canvas size is 960x540 pixels (16:9 aspect ratio).
+Canvas size is 1280x720 pixels (16:9 aspect ratio).
 For images, use placeholders in format [IMAGE_query] (e.g., [IMAGE_mountains]).
 Return only valid JSON with this structure:
 {
@@ -155,12 +160,17 @@ Return only valid JSON with this structure:
       if (jsonText.startsWith('```')) {
         const lines = jsonText.split('\n')
         const startIndex = lines.findIndex((line: string) => line.includes('{'))
-        const endIndex = lines.findIndex((line: string, idx: number) => idx > startIndex && line.includes('}'))
+        const endIndex = lines.findIndex(
+          (line: string, idx: number) => idx > startIndex && line.includes('}'),
+        )
         if (startIndex !== -1 && endIndex !== -1) {
           jsonText = lines.slice(startIndex, endIndex + 1).join('\n')
         } else {
           // Try to extract JSON between code blocks
-          jsonText = jsonText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+          jsonText = jsonText
+            .replace(/```json\n?/g, '')
+            .replace(/```\n?/g, '')
+            .trim()
         }
       }
 
@@ -177,7 +187,8 @@ Return only valid JSON with this structure:
       return { slides: slidesWithImages }
     } catch (error) {
       console.error('Failed to generate presentation:', error)
-      throw new Error(`Failed to generate presentation: ${error instanceof Error ? error.message : 'Unknown error'}`)
+      throw new Error(
+        `Failed to generate presentation: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
     }
   })
-

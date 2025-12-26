@@ -117,15 +117,14 @@ export function PropertiesPanel() {
 
           <div>
             <Label className="mb-2 block">Arrange</Label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={bringToFront}
                 title="Bring to Front"
               >
-                <ArrowUp className="h-4 w-4 mr-1" />
-                Front
+                <ArrowUp className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
@@ -133,8 +132,7 @@ export function PropertiesPanel() {
                 onClick={bringForward}
                 title="Bring Forward"
               >
-                <ArrowUpDown className="h-4 w-4 mr-1" />
-                Forward
+                <ArrowUpDown className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
@@ -142,8 +140,7 @@ export function PropertiesPanel() {
                 onClick={sendBackward}
                 title="Send Backward"
               >
-                <ArrowDown className="h-4 w-4 mr-1" />
-                Backward
+                <ArrowDown className="h-4 w-4" />
               </Button>
               <Button
                 variant="outline"
@@ -151,8 +148,7 @@ export function PropertiesPanel() {
                 onClick={sendToBack}
                 title="Send to Back"
               >
-                <ArrowDown className="h-4 w-4 mr-1" />
-                Back
+                <ArrowDown className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -311,15 +307,14 @@ export function PropertiesPanel() {
         {/* Arrange */}
         <div>
           <Label className="mb-2 block">Arrange</Label>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-4 gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={bringToFront}
               title="Bring to Front"
             >
-              <ArrowUp className="h-4 w-4 mr-1" />
-              Front
+              <ArrowUp className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -327,8 +322,7 @@ export function PropertiesPanel() {
               onClick={bringForward}
               title="Bring Forward"
             >
-              <ArrowUpDown className="h-4 w-4 mr-1" />
-              Forward
+              <ArrowUpDown className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -336,8 +330,7 @@ export function PropertiesPanel() {
               onClick={sendBackward}
               title="Send Backward"
             >
-              <ArrowDown className="h-4 w-4 mr-1" />
-              Backward
+              <ArrowDown className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -345,8 +338,7 @@ export function PropertiesPanel() {
               onClick={sendToBack}
               title="Send to Back"
             >
-              <ArrowDown className="h-4 w-4 mr-1" />
-              Back
+              <ArrowDown className="h-4 w-4" />
             </Button>
           </div>
         </div>

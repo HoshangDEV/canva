@@ -39,7 +39,7 @@ A multi-slide presentation editor where users can:
 - Manage element z-order (bring forward, send backward, etc.)
 
 ### Canvas Specifications
-- **Canvas size:** 960px × 540px (16:9 aspect ratio)
+- **Canvas size:** 1280px × 720px (16:9 aspect ratio)
 - **Background:** White canvas with shadow
 - **Container:** Gray background with padding
 - **Zoom range:** 25% to 300%
@@ -182,8 +182,8 @@ import { fabric } from 'fabric'
 
 // Create Fabric canvas
 const canvas = new fabric.Canvas('canvas', {
-  width: 960,
-  height: 540,
+  width: 1280,
+  height: 720,
   backgroundColor: '#ffffff',
   selection: true, // Enable multi-selection
   preserveObjectStacking: true,
@@ -251,7 +251,7 @@ canvas.on('object:moving', (e) => {
   const snapThreshold = 5
 
   // Snap to canvas center (480, 270)
-  // Snap to canvas edges (0, 960, 0, 540)
+  // Snap to canvas edges (0, 1280, 0, 720)
   // Snap to other objects
 })
 ```
@@ -319,8 +319,8 @@ canvas.on('object:moving', (e) => {
   const bounds = {
     left: 0,
     top: 0,
-    right: 960,
-    bottom: 540,
+    right: 1280,
+    bottom: 720,
   }
 
   obj.setCoords()
@@ -439,7 +439,7 @@ export const generatePresentation = createServerFn({ method: 'POST' })
 See the detailed prompt file content that instructs the AI how to generate presentations.
 
 **Key Points:**
-- Canvas: 960×540px (16:9)
+- Canvas: 1280×720px (16:9)
 - Output JSON structure with slides array
 - Element types: text, shape, image
 - Design guidelines (typography, spacing, colors)
@@ -553,11 +553,11 @@ canRedo: () => historyIndex < history.length - 1
 alignElements: (alignment: AlignmentType) => {
   switch (alignment) {
     case 'left': x = 0; break
-    case 'center-h': x = (960 - width) / 2; break
-    case 'right': x = 960 - width; break
+    case 'center-h': x = (1280 - width) / 2; break
+    case 'right': x = 1280 - width; break
     case 'top': y = 0; break
-    case 'center-v': y = (540 - height) / 2; break
-    case 'bottom': y = 540 - height; break
+    case 'center-v': y = (720 - height) / 2; break
+    case 'bottom': y = 720 - height; break
   }
 }
 ```
@@ -833,7 +833,7 @@ bun --bun run dev
 3. **Performance** - Fabric.js handles rendering efficiently, but avoid unnecessary re-renders
 4. **State Consistency** - Always keep Zustand store and Fabric canvas in sync
 5. **RTL Support** - Essential for Kurdish/Arabic text
-6. **Responsive Design** - Canvas size is fixed (960×540), but container should adapt
+6. **Responsive Design** - Canvas size is fixed (1280×720), but container should adapt
 7. **Error Handling** - Handle API failures gracefully (Gemini, Unsplash)
 8. **Type Safety** - Use TypeScript strictly for all components
 

@@ -207,31 +207,76 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const updates: { id: string; changes: Partial<SlideElement> }[] = []
 
     selectedElements.forEach((element) => {
-      let x = element.x
-      let y = element.y
+      // Calculate the bounding box of the rotated element
+      const rotation = element.rotation || 0
+      const radians = (rotation * Math.PI) / 180
+
+      // Get the corners of the unrotated rectangle (relative to origin)
+      const halfWidth = element.width / 2
+      const halfHeight = element.height / 2
+
+      // Element center in canvas coordinates
+      const centerX = element.x + halfWidth
+      const centerY = element.y + halfHeight
+
+      // Calculate the corners after rotation
+      const cos = Math.cos(radians)
+      const sin = Math.sin(radians)
+
+      const corners = [
+        { x: -halfWidth, y: -halfHeight },
+        { x: halfWidth, y: -halfHeight },
+        { x: halfWidth, y: halfHeight },
+        { x: -halfWidth, y: halfHeight },
+      ].map(corner => ({
+        x: centerX + (corner.x * cos - corner.y * sin),
+        y: centerY + (corner.x * sin + corner.y * cos),
+      }))
+
+      // Find bounding box of rotated element
+      const minX = Math.min(...corners.map(c => c.x))
+      const maxX = Math.max(...corners.map(c => c.x))
+      const minY = Math.min(...corners.map(c => c.y))
+      const maxY = Math.max(...corners.map(c => c.y))
+
+      const boundingWidth = maxX - minX
+      const boundingHeight = maxY - minY
+
+      // Current offset from element origin to bounding box origin
+      const offsetX = minX - element.x
+      const offsetY = minY - element.y
+
+      let newX = element.x
+      let newY = element.y
 
       switch (alignment) {
         case 'left':
-          x = 0
+          // Position so bounding box left edge is at x=0
+          newX = -offsetX
           break
         case 'center-h':
-          x = (CANVAS_WIDTH - element.width) / 2
+          // Position so bounding box is centered horizontally
+          newX = (CANVAS_WIDTH - boundingWidth) / 2 - offsetX
           break
         case 'right':
-          x = CANVAS_WIDTH - element.width
+          // Position so bounding box right edge is at canvas right
+          newX = CANVAS_WIDTH - boundingWidth - offsetX
           break
         case 'top':
-          y = 0
+          // Position so bounding box top edge is at y=0
+          newY = -offsetY
           break
         case 'center-v':
-          y = (CANVAS_HEIGHT - element.height) / 2
+          // Position so bounding box is centered vertically
+          newY = (CANVAS_HEIGHT - boundingHeight) / 2 - offsetY
           break
         case 'bottom':
-          y = CANVAS_HEIGHT - element.height
+          // Position so bounding box bottom edge is at canvas bottom
+          newY = CANVAS_HEIGHT - boundingHeight - offsetY
           break
       }
 
-      updates.push({ id: element.id, changes: { x, y } })
+      updates.push({ id: element.id, changes: { x: newX, y: newY } })
     })
 
     get().updateElements(updates)
