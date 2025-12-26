@@ -29,8 +29,11 @@ interface EditorState {
   updateElements: (updates: { id: string; changes: Partial<SlideElement> }[]) => void
   deleteElement: (id: string) => void
   deleteSelectedElements: () => void
+  duplicateElement: (id: string) => void
+  duplicateSelectedElements: () => void
   addSlide: () => void
   deleteSlide: (index: number) => void
+  duplicateSlide: (index: number) => void
   alignElements: (alignment: AlignmentType) => void
   alignElementsX: (alignment: XAxisAlignmentType) => void
   alignElementsY: (alignment: YAxisAlignmentType) => void
@@ -163,6 +166,90 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     selectedElementIds.forEach((id) => get().deleteElement(id))
   },
 
+  duplicateElement: (id) => {
+    const state = get()
+    const currentSlide = state.slides[state.currentSlideIndex]
+    const element = currentSlide.elements.find((el) => el.id === id)
+
+    if (!element) return
+
+    // Create a deep copy of the element with a new ID
+    const duplicatedElement: SlideElement = {
+      ...element,
+      id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      // Offset position by 20px so it's visible
+      x: element.x + 20,
+      y: element.y + 20,
+    }
+
+    set((state) => {
+      const slides = [...state.slides]
+      const currentSlide = { ...slides[state.currentSlideIndex] }
+      // Find the index of the original element and insert duplicate right after it
+      const originalIndex = currentSlide.elements.findIndex((el) => el.id === id)
+      const insertIndex = originalIndex !== -1 ? originalIndex + 1 : currentSlide.elements.length
+      currentSlide.elements = [
+        ...currentSlide.elements.slice(0, insertIndex),
+        duplicatedElement,
+        ...currentSlide.elements.slice(insertIndex),
+      ]
+      slides[state.currentSlideIndex] = currentSlide
+
+      return {
+        slides,
+        selectedElementIds: [duplicatedElement.id],
+      }
+    })
+
+    get().saveSnapshot()
+  },
+
+  duplicateSelectedElements: () => {
+    const { selectedElementIds } = get()
+    if (selectedElementIds.length === 0) return
+
+    const state = get()
+    const currentSlide = state.slides[state.currentSlideIndex]
+    const selectedElements = currentSlide.elements.filter((el) =>
+      selectedElementIds.includes(el.id)
+    )
+
+    if (selectedElements.length === 0) return
+
+    // Create duplicates with new IDs and offset positions
+    const duplicatedElements: SlideElement[] = selectedElements.map((element) => ({
+      ...element,
+      id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      x: element.x + 20,
+      y: element.y + 20,
+    }))
+
+    set((state) => {
+      const slides = [...state.slides]
+      const currentSlide = { ...slides[state.currentSlideIndex] }
+      // Find the highest index of selected elements and insert duplicates after
+      const maxIndex = Math.max(
+        ...selectedElements.map((el) =>
+          currentSlide.elements.findIndex((e) => e.id === el.id)
+        )
+      )
+      const insertIndex = maxIndex !== -1 ? maxIndex + 1 : currentSlide.elements.length
+      currentSlide.elements = [
+        ...currentSlide.elements.slice(0, insertIndex),
+        ...duplicatedElements,
+        ...currentSlide.elements.slice(insertIndex),
+      ]
+      slides[state.currentSlideIndex] = currentSlide
+
+      return {
+        slides,
+        selectedElementIds: duplicatedElements.map((el) => el.id),
+      }
+    })
+
+    get().saveSnapshot()
+  },
+
   addSlide: () => {
     set((state) => {
       const newSlide: Slide = {
@@ -193,6 +280,36 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       return {
         slides,
         currentSlideIndex: newIndex,
+        selectedElementIds: [],
+      }
+    })
+
+    get().saveSnapshot()
+  },
+
+  duplicateSlide: (index) => {
+    const state = get()
+    const slideToDuplicate = state.slides[index]
+
+    if (!slideToDuplicate) return
+
+    // Create a deep copy of the slide with new IDs for all elements
+    const duplicatedSlide: Slide = {
+      id: `slide-${Date.now()}`,
+      elements: slideToDuplicate.elements.map((element) => ({
+        ...element,
+        id: `element-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      })),
+    }
+
+    set((state) => {
+      const slides = [...state.slides]
+      // Insert duplicate slide right after the original
+      slides.splice(index + 1, 0, duplicatedSlide)
+
+      return {
+        slides,
+        currentSlideIndex: index + 1,
         selectedElementIds: [],
       }
     })

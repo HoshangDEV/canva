@@ -1,10 +1,10 @@
 import { useEditorStore } from '@/store/editor-store'
 import { Button } from '@/components/ui/button'
-import { Plus, Trash2 } from 'lucide-react'
+import { Plus, Trash2, Copy } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function SlidePanel() {
-  const { slides, currentSlideIndex, setCurrentSlide, addSlide, deleteSlide } =
+  const { slides, currentSlideIndex, setCurrentSlide, addSlide, deleteSlide, duplicateSlide } =
     useEditorStore()
 
   return (
@@ -37,19 +37,32 @@ export function SlidePanel() {
                 {index + 1}
               </div>
             </div>
-            {slides.length > 1 && (
+            <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <Button
                 variant="ghost"
                 size="sm"
-                className="absolute top-1 right-1 h-6 w-6 p-0 opacity-0 group-hover:opacity-100 hover:bg-destructive/10 transition-opacity"
+                className="h-6 w-6 p-0 hover:bg-accent"
                 onClick={(e) => {
                   e.stopPropagation()
-                  deleteSlide(index)
+                  duplicateSlide(index)
                 }}
               >
-                <Trash2 className="h-3 w-3 text-destructive" />
+                <Copy className="h-3 w-3" />
               </Button>
-            )}
+              {slides.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 w-6 p-0 hover:bg-destructive/10"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    deleteSlide(index)
+                  }}
+                >
+                  <Trash2 className="h-3 w-3 text-destructive" />
+                </Button>
+              )}
+            </div>
           </div>
         ))}
       </div>

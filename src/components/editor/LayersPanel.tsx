@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { MoreVertical, ChevronUp, ChevronDown, Trash2 } from 'lucide-react'
+import { MoreVertical, ChevronUp, ChevronDown, Trash2, Copy } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SlideElement } from '@/types/editor'
 
@@ -43,6 +43,7 @@ export function LayersPanel() {
     selectedElementIds,
     selectElement,
     deleteElement,
+    duplicateElement,
     bringForward,
     sendBackward,
   } = useEditorStore()
@@ -141,6 +142,15 @@ export function LayersPanel() {
                       >
                         <ChevronDown className="mr-2 h-4 w-4" />
                         Move Down
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          duplicateElement(element.id)
+                        }}
+                      >
+                        <Copy className="mr-2 h-4 w-4" />
+                        Duplicate
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={(e) => {
