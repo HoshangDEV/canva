@@ -332,10 +332,12 @@ export function PropertiesPanel() {
         <div>
           <Label htmlFor="rotation">
             Rotation: {Math.round(element.rotation)}°{' '}
-            <RotateCcw
+            <button
               onClick={() => updateElement(element.id, { rotation: 0 })}
-              className="size-3 ms-auto text-muted-foreground"
-            />
+              className="ms-auto text-muted-foreground cursor-pointer"
+            >
+              <RotateCcw className="size-3" />
+            </button>
           </Label>
           <Slider
             id="rotation"
@@ -762,10 +764,12 @@ export function PropertiesPanel() {
             <div>
               <Label htmlFor="borderRadius">
                 Border Radius: {element.borderRadius || 0}px{' '}
-                <RotateCcw
+                <button
                   onClick={() => updateElement(element.id, { borderRadius: 4 })}
-                  className="size-3 ms-auto text-muted-foreground"
-                />
+                  className="ms-auto text-muted-foreground cursor-pointer"
+                >
+                  <RotateCcw className="size-3" />
+                </button>
               </Label>
               <Slider
                 id="borderRadius"
