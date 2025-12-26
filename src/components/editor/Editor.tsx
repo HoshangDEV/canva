@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useEditorStore } from '@/store/editor-store'
 import { Toolbar } from './Toolbar'
-import { Canvas } from './Canvas'
+import { Canvas } from './canvas'
 import { SlidePanel } from './SlidePanel'
 import { PropertiesPanel } from './PropertiesPanel'
 import { AIDialog } from './AIDialog'
