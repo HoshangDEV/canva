@@ -8,6 +8,8 @@ import {
   Type,
   Square,
   Image as ImageIcon,
+  ZoomIn,
+  ZoomOut,
 } from 'lucide-react'
 import { AIDialog } from './AIDialog'
 
@@ -18,6 +20,10 @@ export function Toolbar() {
     canUndo,
     canRedo,
     addElement,
+    zoom,
+    zoomIn,
+    zoomOut,
+    resetZoom,
   } = useEditorStore()
 
   const [aiDialogOpen, setAIDialogOpen] = useState(false)
@@ -120,6 +126,33 @@ export function Toolbar() {
         >
           <Sparkles />
           AI Prompt
+        </Button>
+
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={zoomOut}
+          title="Zoom Out"
+        >
+          <ZoomOut className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={resetZoom}
+          title={`Reset Zoom (${Math.round(zoom * 100)}%)`}
+        >
+          {Math.round(zoom * 100)}%
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={zoomIn}
+          title="Zoom In"
+        >
+          <ZoomIn className="h-4 w-4" />
         </Button>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />

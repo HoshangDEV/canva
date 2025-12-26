@@ -14,6 +14,7 @@ interface EditorState {
   history: EditorStateSnapshot[]
   historyIndex: number
   maxHistorySize: number
+  zoom: number
 
   // Actions
   setSlides: (slides: Slide[]) => void
@@ -36,6 +37,10 @@ interface EditorState {
   canUndo: () => boolean
   canRedo: () => boolean
   saveSnapshot: () => void
+  setZoom: (zoom: number) => void
+  zoomIn: () => void
+  zoomOut: () => void
+  resetZoom: () => void
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -50,6 +55,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   history: [],
   historyIndex: -1,
   maxHistorySize: 50,
+  zoom: 1,
 
   setSlides: (slides) => {
     set({ slides })
@@ -507,6 +513,28 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       history: newHistory,
       historyIndex: newHistory.length - 1,
     })
+  },
+
+  setZoom: (zoom) => {
+    // Clamp zoom between 0.1 (10%) and 5 (500%)
+    const clampedZoom = Math.max(0.1, Math.min(5, zoom))
+    set({ zoom: clampedZoom })
+  },
+
+  zoomIn: () => {
+    const { zoom } = get()
+    // Increase by 25% each time
+    get().setZoom(zoom * 1.25)
+  },
+
+  zoomOut: () => {
+    const { zoom } = get()
+    // Decrease by 25% each time
+    get().setZoom(zoom / 1.25)
+  },
+
+  resetZoom: () => {
+    set({ zoom: 1 })
   },
 }))
 

@@ -27,8 +27,13 @@ import {
   ArrowUpLeft,
   ArrowUpRight,
   Bold,
+  ChevronDown,
+  ChevronsDown,
+  ChevronsUp,
+  ChevronUp,
   Italic,
   Move,
+  RotateCcw,
   Trash2,
 } from 'lucide-react'
 
@@ -208,7 +213,7 @@ export function PropertiesPanel() {
       <div className="space-y-4">
         {/* Common Properties */}
         <div className="grid grid-cols-2 gap-2">
-          <div>
+          <div className="space-y-0.5">
             <Label htmlFor="x">X</Label>
             <Input
               id="x"
@@ -219,7 +224,7 @@ export function PropertiesPanel() {
               }
             />
           </div>
-          <div>
+          <div className="space-y-0.5">
             <Label htmlFor="y">Y</Label>
             <Input
               id="y"
@@ -233,7 +238,7 @@ export function PropertiesPanel() {
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          <div>
+          <div className="space-y-0.5">
             <Label htmlFor="width">Width</Label>
             <Input
               id="width"
@@ -244,7 +249,7 @@ export function PropertiesPanel() {
               }
             />
           </div>
-          <div>
+          <div className="space-y-0.5">
             <Label htmlFor="height">Height</Label>
             <Input
               id="height"
@@ -259,7 +264,11 @@ export function PropertiesPanel() {
 
         <div>
           <Label htmlFor="rotation">
-            Rotation: {Math.round(element.rotation)}°
+            Rotation: {Math.round(element.rotation)}°{' '}
+            <RotateCcw
+              onClick={() => updateElement(element.id, { rotation: 0 })}
+              className="size-3 ms-auto text-muted-foreground"
+            />
           </Label>
           <Slider
             id="rotation"
@@ -268,14 +277,6 @@ export function PropertiesPanel() {
             value={[element.rotation]}
             onValueChange={([value]) =>
               updateElement(element.id, { rotation: value })
-            }
-            className="mt-2"
-          />
-          <Input
-            type="number"
-            value={Math.round(element.rotation)}
-            onChange={(e) =>
-              updateElement(element.id, { rotation: Number(e.target.value) })
             }
             className="mt-2"
           />
@@ -370,7 +371,7 @@ export function PropertiesPanel() {
               onClick={bringToFront}
               title="Bring to Front"
             >
-              <ArrowUp />
+              <ChevronsUp />
             </Button>
             <Button
               variant="outline"
@@ -378,7 +379,7 @@ export function PropertiesPanel() {
               onClick={bringForward}
               title="Bring Forward"
             >
-              <ArrowUpDown />
+              <ChevronUp />
             </Button>
             <Button
               variant="outline"
@@ -386,7 +387,7 @@ export function PropertiesPanel() {
               onClick={sendBackward}
               title="Send Backward"
             >
-              <ArrowDown />
+              <ChevronDown />
             </Button>
             <Button
               variant="outline"
@@ -394,7 +395,7 @@ export function PropertiesPanel() {
               onClick={sendToBack}
               title="Send to Back"
             >
-              <ArrowDown />
+              <ChevronsDown />
             </Button>
           </div>
         </div>
@@ -582,14 +583,14 @@ export function PropertiesPanel() {
             <div>
               <Label htmlFor="shapeColor">Fill Color</Label>
               <div className="flex gap-2 mt-1">
-                <Input
+                <input
                   id="shapeColor"
                   type="color"
                   value={element.color || '#3b82f6'}
                   onChange={(e) =>
                     updateElement(element.id, { color: e.target.value })
                   }
-                  className="w-16 h-10"
+                  className="size-8"
                 />
                 <Input
                   type="text"
@@ -604,7 +605,11 @@ export function PropertiesPanel() {
 
             <div>
               <Label htmlFor="borderRadius">
-                Border Radius: {element.borderRadius || 0}px
+                Border Radius: {element.borderRadius || 0}px{' '}
+                <RotateCcw
+                  onClick={() => updateElement(element.id, { borderRadius: 4 })}
+                  className="size-3 ms-auto text-muted-foreground"
+                />
               </Label>
               <Slider
                 id="borderRadius"
@@ -613,18 +618,6 @@ export function PropertiesPanel() {
                 value={[element.borderRadius || 0]}
                 onValueChange={([value]) =>
                   updateElement(element.id, { borderRadius: value })
-                }
-                className="mt-2"
-              />
-              <Input
-                type="number"
-                min={0}
-                max={100}
-                value={element.borderRadius || 0}
-                onChange={(e) =>
-                  updateElement(element.id, {
-                    borderRadius: Number(e.target.value),
-                  })
                 }
                 className="mt-2"
               />

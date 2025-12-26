@@ -16,6 +16,8 @@ export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fabricCanvasRef = useRef<FabricCanvas | null>(null)
   const isUpdatingRef = useRef(false)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const hasInitialZoomRef = useRef(false)
 
   const {
     slides,
@@ -24,9 +26,53 @@ export function Canvas() {
     selectElement,
     updateElement,
     deleteElement,
+    zoom,
+    setZoom,
   } = useEditorStore()
 
   const currentSlide = slides[currentSlideIndex] || slides[0]
+
+  // Calculate and set initial zoom to fit available width
+  useEffect(() => {
+    if (hasInitialZoomRef.current || !containerRef.current) return
+
+    const calculateZoom = () => {
+      if (!containerRef.current || hasInitialZoomRef.current) return
+
+      // Get the container's available width (accounting for padding)
+      const container = containerRef.current
+      const containerWidth = container.clientWidth
+      const padding = 32 * 2 // p-8 = 32px on each side
+      const availableWidth = containerWidth - padding
+
+      // Calculate zoom to fit canvas width in available space
+      const calculatedZoom = availableWidth / CANVAS_CONFIG.width
+
+      // Only set initial zoom once, and only if it's reasonable (between 0.1 and 1)
+      if (calculatedZoom > 0.1 && calculatedZoom <= 1) {
+        setZoom(calculatedZoom)
+        hasInitialZoomRef.current = true
+      }
+    }
+
+    // Small delay to ensure layout is complete
+    const timeoutId = setTimeout(() => {
+      calculateZoom()
+    }, 100)
+
+    // Recalculate on window resize (but only if zoom hasn't been manually changed)
+    const handleResize = () => {
+      if (!hasInitialZoomRef.current) {
+        calculateZoom()
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+    return () => {
+      clearTimeout(timeoutId)
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [setZoom])
 
   // Initialize Fabric.js canvas
   useEffect(() => {
@@ -252,8 +298,17 @@ export function Canvas() {
   }, [deleteElement])
 
   return (
-    <div className="flex-1 flex items-center justify-center p-8 overflow-auto bg-gray-100">
-      <div className="bg-white shadow-lg">
+    <div
+      ref={containerRef}
+      className="flex-1 flex items-center justify-center p-8 overflow-auto bg-gray-100"
+    >
+      <div
+        className="bg-white shadow-lg"
+        style={{
+          transform: `scale(${zoom})`,
+          transformOrigin: 'center center',
+        }}
+      >
         <canvas ref={canvasRef} />
       </div>
     </div>
