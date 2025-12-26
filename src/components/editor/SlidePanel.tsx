@@ -2,10 +2,7 @@ import { useEditorStore } from '@/store/editor-store'
 import { Button } from '@/components/ui/button'
 import { Plus, Trash2 } from 'lucide-react'
 import { isRTLText } from '@/lib/utils'
-
-const CANVAS_WIDTH = 960
-const CANVAS_HEIGHT = 540
-const THUMBNAIL_SCALE = 0.2
+import { CANVAS_CONFIG } from '@/constants'
 
 export function SlidePanel() {
   const { slides, currentSlideIndex, setCurrentSlide, addSlide, deleteSlide } =
@@ -40,10 +37,10 @@ export function SlidePanel() {
               <div
                 className="absolute inset-0"
                 style={{
-                  transform: `scale(${THUMBNAIL_SCALE})`,
+                  transform: `scale(${CANVAS_CONFIG.thumbnailScale})`,
                   transformOrigin: 'top left',
-                  width: `${CANVAS_WIDTH}px`,
-                  height: `${CANVAS_HEIGHT}px`,
+                  width: `${CANVAS_CONFIG.width}px`,
+                  height: `${CANVAS_CONFIG.height}px`,
                 }}
               >
                 {slide.elements.map((element) => (
@@ -62,7 +59,7 @@ export function SlidePanel() {
                       <div
                         className="text-xs whitespace-nowrap overflow-hidden"
                         style={{
-                          fontSize: `${(element.fontSize || 16) * THUMBNAIL_SCALE}px`,
+                          fontSize: `${(element.fontSize || 16) * CANVAS_CONFIG.thumbnailScale}px`,
                           color: element.fontColor || '#000000',
                           textAlign: element.textAlign || 'left',
                           direction: isRTLText(element.content) ? 'rtl' : 'ltr',
@@ -76,7 +73,7 @@ export function SlidePanel() {
                         className="border"
                         style={{
                           backgroundColor: element.color || '#3b82f6',
-                          borderRadius: `${(element.borderRadius || 0) * THUMBNAIL_SCALE}px`,
+                          borderRadius: `${(element.borderRadius || 0) * CANVAS_CONFIG.thumbnailScale}px`,
                           width: '100%',
                           height: '100%',
                         }}
@@ -86,7 +83,7 @@ export function SlidePanel() {
                       <div
                         className="bg-gray-200 border border-gray-300"
                         style={{
-                          borderRadius: `${(element.borderRadius || 0) * THUMBNAIL_SCALE}px`,
+                          borderRadius: `${(element.borderRadius || 0) * CANVAS_CONFIG.thumbnailScale}px`,
                           width: '100%',
                           height: '100%',
                           backgroundImage: element.imageUrl
@@ -123,4 +120,3 @@ export function SlidePanel() {
     </div>
   )
 }
-

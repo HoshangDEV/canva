@@ -1,11 +1,16 @@
 import { useEffect, useRef } from 'react'
-import { Canvas as FabricCanvas, Textbox, Rect, Image as FabricImage, ActiveSelection, FabricObject } from 'fabric'
+import {
+  Canvas as FabricCanvas,
+  Textbox,
+  Rect,
+  Image as FabricImage,
+  ActiveSelection,
+  FabricObject,
+} from 'fabric'
 import { useEditorStore } from '@/store/editor-store'
 import { isRTLText } from '@/lib/utils'
 import type { SlideElement } from '@/types/editor'
-
-const CANVAS_WIDTH = 960
-const CANVAS_HEIGHT = 540
+import { CANVAS_CONFIG } from '@/constants'
 
 export function Canvas() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -30,8 +35,8 @@ export function Canvas() {
     if (!canvasRef.current) return
 
     const canvas = new FabricCanvas(canvasRef.current, {
-      width: CANVAS_WIDTH,
-      height: CANVAS_HEIGHT,
+      width: CANVAS_CONFIG.width,
+      height: CANVAS_CONFIG.height,
       backgroundColor: '#ffffff',
       selection: true,
       preserveObjectStacking: true,
@@ -42,7 +47,9 @@ export function Canvas() {
     // Handle selection changes
     canvas.on('selection:created', (e: any) => {
       if (isUpdatingRef.current) return
-      const selected = e.selected?.map((obj: any) => obj.get('elementId')).filter(Boolean) || []
+      const selected =
+        e.selected?.map((obj: any) => obj.get('elementId')).filter(Boolean) ||
+        []
       if (selected.length > 0) {
         selectElement(selected[0], false)
         if (selected.length > 1) {
@@ -53,7 +60,9 @@ export function Canvas() {
 
     canvas.on('selection:updated', (e: any) => {
       if (isUpdatingRef.current) return
-      const selected = e.selected?.map((obj: any) => obj.get('elementId')).filter(Boolean) || []
+      const selected =
+        e.selected?.map((obj: any) => obj.get('elementId')).filter(Boolean) ||
+        []
       if (selected.length > 0) {
         selectElement(selected[0], false)
         if (selected.length > 1) {
@@ -90,7 +99,7 @@ export function Canvas() {
 
       // Reset scale to 1 after applying to width/height
       obj.set({ scaleX: 1, scaleY: 1 })
-      
+
       // For textbox, update the fixed dimensions
       if (obj.type === 'textbox') {
         obj.set({
@@ -98,7 +107,7 @@ export function Canvas() {
           height: height,
         })
       }
-      
+
       canvas.renderAll()
     })
 
@@ -117,13 +126,13 @@ export function Canvas() {
         // Keep width and height as they are - don't auto-adjust
       })
     })
-    
+
     // Handle textbox resizing - allow both width and height to be resized manually
     canvas.on('object:scaling', (e: any) => {
       if (isUpdatingRef.current) return
       const obj = e.target
       if (!obj || obj.type !== 'textbox') return
-      
+
       // Update coordinates for visual feedback
       // Actual dimension updates happen in object:modified handler
       obj.setCoords()
@@ -137,8 +146,8 @@ export function Canvas() {
       const bounds = {
         left: 0,
         top: 0,
-        right: CANVAS_WIDTH,
-        bottom: CANVAS_HEIGHT,
+        right: CANVAS_CONFIG.width,
+        bottom: CANVAS_CONFIG.height,
       }
 
       obj.setCoords()
@@ -275,7 +284,7 @@ export function Canvas() {
 
 function createFabricObject(
   element: SlideElement,
-  canvas: FabricCanvas
+  canvas: FabricCanvas,
 ): FabricObject | null {
   switch (element.type) {
     case 'text': {
@@ -294,39 +303,39 @@ function createFabricObject(
         lockScalingFlip: true, // Prevent flipping when resizing
         lockUniScaling: false, // Allow independent width/height scaling
       })
-      
+
       // Set direction for RTL text
       if (isRTLText(element.content)) {
         text.set('direction', 'rtl')
       }
-      
+
       // Set fixed dimensions - override auto-height calculation
       const fixedHeight = element.height || 50
       text.set({
         width: element.width,
         height: fixedHeight, // Use fixed height from element
       })
-      
+
       // Override initDimensions to prevent auto-height recalculation
       const originalInitDimensions = text.initDimensions.bind(text)
-      text.initDimensions = function() {
+      text.initDimensions = function () {
         // Call original but then restore fixed height
         originalInitDimensions()
         // Always restore the fixed height from element
         this.set('height', fixedHeight)
       }
-      
+
       // Force the height to stay fixed after any operation
       text.set({
         height: fixedHeight,
       })
-      
+
       // Re-initialize to apply the fixed height
       text.initDimensions()
-      
+
       // Update coordinates to ensure rotation controls are positioned correctly
       text.setCoords()
-      
+
       return text
     }
 
@@ -365,12 +374,9 @@ function createFabricObject(
 
       // Load image if URL is provided
       if (element.imageUrl) {
-        FabricImage.fromURL(
-          element.imageUrl,
-          {
-            crossOrigin: 'anonymous',
-          }
-        )
+        FabricImage.fromURL(element.imageUrl, {
+          crossOrigin: 'anonymous',
+        })
           .then((img: FabricImage) => {
             img.set({
               left: element.x,
@@ -399,7 +405,7 @@ function createFabricObject(
             // Find and replace placeholder in canvas
             const objects = canvas.getObjects()
             const placeholderObj = objects.find(
-              (obj: FabricObject) => obj.get('elementId') === element.id
+              (obj: FabricObject) => obj.get('elementId') === element.id,
             )
             if (placeholderObj) {
               img.set('elementId', element.id)
@@ -420,4 +426,3 @@ function createFabricObject(
       return null
   }
 }
-
