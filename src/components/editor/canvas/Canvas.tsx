@@ -12,9 +12,22 @@ export function Canvas() {
 
   const zoom = useEditorStore((state) => state.zoom)
   const setZoom = useEditorStore((state) => state.setZoom)
+  const setCanvasRef = useEditorStore((state) => state.setCanvasRef)
 
   // Initialize Fabric.js canvas
   const { canvasRef, fabricCanvas } = useFabricCanvas()
+
+  // Register canvas with store
+  useEffect(() => {
+    if (fabricCanvas) {
+      setCanvasRef(fabricCanvas)
+    }
+    return () => {
+      if (fabricCanvas) {
+        setCanvasRef(null)
+      }
+    }
+  }, [fabricCanvas, setCanvasRef])
 
   // Sync store elements ↔ canvas objects (with differential updates)
   const { isUpdatingRef } = useCanvasSync(fabricCanvas)

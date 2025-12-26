@@ -86,86 +86,9 @@ export function PropertiesPanel() {
         </h3>
 
         <div className="space-y-4">
-          <div>
-            <Label className="mb-2 block">Normal Alignment</Label>
-            <div className="grid grid-cols-3 gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => alignElements('top-left')}
-                title="Top Left"
-              >
-                <ArrowUpLeft />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => alignElements('top-center')}
-                title="Top Center"
-              >
-                <ArrowUp />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => alignElements('top-right')}
-                title="Top Right"
-              >
-                <ArrowUpRight />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => alignElements('mid-left')}
-                title="Mid Left"
-              >
-                <ArrowLeft />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => alignElements('mid-center')}
-                title="Mid Center"
-              >
-                <Move />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => alignElements('mid-right')}
-                title="Mid Right"
-              >
-                <ArrowRight />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => alignElements('bottom-left')}
-                title="Bottom Left"
-              >
-                <ArrowDownLeft />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => alignElements('bottom-center')}
-                title="Bottom Center"
-              >
-                <ArrowDown />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => alignElements('bottom-right')}
-                title="Bottom Right"
-              >
-                <ArrowDownRight />
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            <Label className="mb-2 block">X-Axis Alignment</Label>
+          {/* Alignment */}
+          <div className="space-y-2">
+            <Label className="block">Alignment</Label>
             <div className="grid grid-cols-3 gap-2">
               <Button
                 variant="outline"
@@ -192,10 +115,6 @@ export function PropertiesPanel() {
                 <IconLayoutAlignRight />
               </Button>
             </div>
-          </div>
-
-          <div>
-            <Label className="mb-2 block">Y-Axis Alignment</Label>
             <div className="grid grid-cols-3 gap-2">
               <Button
                 variant="outline"
@@ -211,7 +130,7 @@ export function PropertiesPanel() {
                 onClick={() => alignElementsY('center')}
                 title="Align Center"
               >
-                <IconLayoutAlignCenter />
+                <IconLayoutAlignMiddle />
               </Button>
               <Button
                 variant="outline"
@@ -220,6 +139,80 @@ export function PropertiesPanel() {
                 title="Align Bottom"
               >
                 <IconLayoutAlignBottom />
+              </Button>
+            </div>
+            <div className="grid grid-cols-3 border rounded-lg">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('top-left')}
+                title="Top Left"
+              >
+                <ArrowUpLeft />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('top-center')}
+                title="Top Center"
+              >
+                <ArrowUp />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('top-right')}
+                title="Top Right"
+              >
+                <ArrowUpRight />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('mid-left')}
+                title="Mid Left"
+              >
+                <ArrowLeft />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('mid-center')}
+                title="Mid Center"
+              >
+                <Move />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('mid-right')}
+                title="Mid Right"
+              >
+                <ArrowRight />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('bottom-left')}
+                title="Bottom Left"
+              >
+                <ArrowDownLeft />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('bottom-center')}
+                title="Bottom Center"
+              >
+                <ArrowDown />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => alignElements('bottom-right')}
+                title="Bottom Right"
+              >
+                <ArrowDownRight />
               </Button>
             </div>
           </div>

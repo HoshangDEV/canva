@@ -9,6 +9,10 @@ import type {
   EditorExportData,
 } from '@/types/editor'
 import { CANVAS_CONFIG } from '@/constants'
+import type { Canvas as FabricCanvas } from 'fabric'
+import { exportAsPDF } from '@/lib/export-utils'
+import { renderSlideToImage } from '@/lib/slide-renderer'
+import { exportSlidesAsPDF, exportSlidesAsPPTX } from '@/server/export'
 
 interface EditorState {
   slides: Slide[]
@@ -19,6 +23,7 @@ interface EditorState {
   maxHistorySize: number
   zoom: number
   activePanel: 'slides' | 'layers'
+  canvasRef: FabricCanvas | null
 
   // Actions
   setSlides: (slides: Slide[]) => void
@@ -53,6 +58,10 @@ interface EditorState {
   setActivePanel: (panel: 'slides' | 'layers') => void
   exportCanvas: () => void
   importCanvas: (data: EditorExportData) => void
+  setCanvasRef: (canvas: FabricCanvas | null) => void
+  exportCurrentSlideAsPDF: () => Promise<void>
+  exportAllSlidesAsPDF: () => Promise<void>
+  exportAllSlidesAsPPTX: () => Promise<void>
 }
 
 export const useEditorStore = create<EditorState>((set, get) => ({
@@ -69,6 +78,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   maxHistorySize: 50,
   zoom: 1,
   activePanel: 'slides',
+  canvasRef: null,
 
   setSlides: (slides) => {
     set({ slides })
@@ -866,6 +876,69 @@ export const useEditorStore = create<EditorState>((set, get) => ({
 
     // Save initial snapshot after import
     get().saveSnapshot()
+  },
+
+  setCanvasRef: (canvas) => {
+    set({ canvasRef: canvas })
+  },
+
+  exportCurrentSlideAsPDF: async () => {
+    const { canvasRef, currentSlideIndex } = get()
+    if (!canvasRef) {
+      throw new Error('Canvas not available')
+    }
+    // Use existing canvas for current slide
+    await exportAsPDF(canvasRef, `slide-${currentSlideIndex + 1}.pdf`)
+  },
+
+  exportAllSlidesAsPDF: async () => {
+    const { slides } = get()
+
+    if (slides.length === 0) {
+      throw new Error('No slides to export')
+    }
+
+    // Render each slide to an image
+    const slideImages: string[] = []
+    for (const slide of slides) {
+      const imageDataUrl = await renderSlideToImage(slide, 2)
+      slideImages.push(imageDataUrl)
+    }
+
+    // Send to backend for PDF generation
+    const result = await exportSlidesAsPDF({
+      data: { slideImages, filename: 'presentation.pdf' },
+    })
+
+    // Download the file
+    const link = document.createElement('a')
+    link.href = result.dataUrl
+    link.download = result.filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  },
+
+  exportAllSlidesAsPPTX: async () => {
+    const { slides } = get()
+
+    if (slides.length === 0) {
+      throw new Error('No slides to export')
+    }
+
+    // Send slide data to backend for PPTX generation with editable elements
+    // The backend will create actual PowerPoint text boxes and shapes
+    const result = await exportSlidesAsPPTX({
+      data: { slides, filename: 'presentation.pptx' },
+    })
+
+    // Download the file
+    const link = document.createElement('a')
+    link.href = result.dataUrl
+    link.download = result.filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
   },
 }))
 

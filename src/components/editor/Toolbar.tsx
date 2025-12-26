@@ -14,6 +14,8 @@ import {
   ZoomOut,
   Download,
   Upload,
+  FileText,
+  Presentation,
 } from 'lucide-react'
 import { AIDialog } from './AIDialog'
 import { ThemeToggle } from '../theme/theme-toggle'
@@ -31,6 +33,9 @@ export function Toolbar() {
     resetZoom,
     exportCanvas,
     importCanvas,
+    exportCurrentSlideAsPDF,
+    exportAllSlidesAsPDF,
+    exportAllSlidesAsPPTX,
   } = useEditorStore()
 
   const [aiDialogOpen, setAIDialogOpen] = useState(false)
@@ -125,7 +130,7 @@ export function Toolbar() {
       } catch (error) {
         console.error('Failed to import canvas:', error)
         toast.error(
-          `Failed to import canvas: ${error instanceof Error ? error.message : 'Invalid file format'}`
+          `Failed to import canvas: ${error instanceof Error ? error.message : 'Invalid file format'}`,
         )
       }
     }
@@ -133,10 +138,46 @@ export function Toolbar() {
       toast.error('Failed to read file')
     }
     reader.readAsText(file)
-    
+
     // Reset input so same file can be selected again
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
+    }
+  }
+
+  const handleExportPDF = async () => {
+    try {
+      await exportCurrentSlideAsPDF()
+      toast.success('PDF exported successfully!')
+    } catch (error) {
+      console.error('Failed to export PDF:', error)
+      toast.error(
+        `Failed to export PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
+    }
+  }
+
+  const handleExportAllPDF = async () => {
+    try {
+      await exportAllSlidesAsPDF()
+      toast.success('All slides exported as PDF successfully!')
+    } catch (error) {
+      console.error('Failed to export PDF:', error)
+      toast.error(
+        `Failed to export PDF: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
+    }
+  }
+
+  const handleExportPPTX = async () => {
+    try {
+      await exportAllSlidesAsPPTX()
+      toast.success('Presentation exported as PPTX successfully!')
+    } catch (error) {
+      console.error('Failed to export PPTX:', error)
+      toast.error(
+        `Failed to export PPTX: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      )
     }
   }
 
@@ -192,12 +233,22 @@ export function Toolbar() {
 
         <div className="w-px h-6 bg-border mx-1" />
 
-        <Button variant="outline" size="sm" onClick={handleExport} title="Export Canvas">
-          <Download />
-          Export
-        </Button>
-        <Button variant="outline" size="sm" onClick={handleImportClick} title="Import Canvas">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExport}
+          title="Export Canvas (JSON)"
+        >
           <Upload />
+          Export JSON
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleImportClick}
+          title="Import Canvas"
+        >
+          <Download />
           Import
         </Button>
         <input
@@ -207,6 +258,36 @@ export function Toolbar() {
           style={{ display: 'none' }}
           onChange={handleFileChange}
         />
+
+        <div className="w-px h-6 bg-border mx-1" />
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportPDF}
+          title="Export Current Slide as PDF"
+        >
+          <FileText />
+          Export PDF
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportAllPDF}
+          title="Export All Slides as PDF"
+        >
+          <FileText />
+          All PDF
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={handleExportPPTX}
+          title="Export All Slides as PowerPoint"
+        >
+          <Presentation />
+          Export PPTX
+        </Button>
 
         <div className="w-px h-6 bg-border mx-1" />
 
