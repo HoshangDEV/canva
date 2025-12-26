@@ -1,85 +1,121 @@
-import { useState } from 'react'
-import { useEditorStore } from '@/store/editor-store'
+'use client'
+
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+
+import { Button } from '@/components/ui/button'
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form'
 import { Textarea } from '@/components/ui/textarea'
-import { Label } from '@/components/ui/label'
+import { isRTLText } from '@/lib/utils'
 import { generatePresentation } from '@/server/ai'
+import { useEditorStore } from '@/store/editor-store'
+import { useTransition } from 'react'
+
+const formSchema = z.object({
+  prompt: z.string().min(1, {
+    message: 'Prompt cannot be empty.',
+  }),
+})
 
 interface AIDialogProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
 }
 
-export function AIDialog({ open: controlledOpen, onOpenChange }: AIDialogProps) {
-  const [internalOpen, setInternalOpen] = useState(false)
-  const [prompt, setPrompt] = useState(
-    'write presentation about kurdistan with 1 slide and add a image from unsplash'
-  )
-  const [loading, setLoading] = useState(false)
-
+export function AIDialog({
+  open: controlledOpen,
+  onOpenChange,
+}: AIDialogProps) {
   const { setSlides } = useEditorStore()
+  const [isPending, startTransition] = useTransition()
 
-  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
-  const setOpen = onOpenChange || setInternalOpen
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      prompt:
+        'write presentation about kurdistan with 1 slide and add a image from unsplash',
+    },
+    disabled: isPending,
+  })
 
-  const handleSubmit = async () => {
-    if (!prompt.trim()) return
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    // Handle form submission here
+    startTransition(async () => {
+      console.log(values)
+      const response = await generatePresentation({
+        data: { prompt: values.prompt },
+      })
 
-    setLoading(true)
-    try {
-      const result = await generatePresentation({ data: { prompt } })
-      if (result.slides && Array.isArray(result.slides)) {
-        setSlides(result.slides)
-        setOpen(false)
-      }
-    } catch (error) {
-      console.error('Failed to generate presentation:', error)
-      alert('Failed to generate presentation. Please try again.')
-    } finally {
-      setLoading(false)
-    }
+      const parsed = JSON.parse(response.presentation)
+      setSlides(parsed.slides)
+      onOpenChange?.(false)
+      form.reset()
+    })
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
+    <Dialog open={controlledOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Generate Presentation with AI</DialogTitle>
+          <DialogTitle>AI Prompt</DialogTitle>
           <DialogDescription>
-            Enter a prompt to generate a complete presentation. The AI will create
-            slides with text, shapes, and images.
+            Enter your prompt to generate content.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4">
-          <div>
-            <Label htmlFor="prompt">Prompt</Label>
-            <Textarea
-              id="prompt"
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              placeholder="write presentation about kurdistan with 1 slide and add a image from unsplash"
-              className="mt-1 min-h-[100px]"
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <FormField
+              control={form.control}
+              name="prompt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Prompt</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter your prompt here..."
+                      className="min-h-[120px]"
+                      {...field}
+                      disabled={isPending}
+                      style={{
+                        direction: isRTLText(field.value) ? 'rtl' : 'ltr',
+                        textAlign: isRTLText(field.value) ? 'right' : 'left',
+                      }}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
-        </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmit} disabled={loading || !prompt.trim()}>
-            {loading ? 'Generating...' : 'Generate'}
-          </Button>
-        </DialogFooter>
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button type="button" variant="outline" disabled={isPending}>
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? 'Generating...' : 'Submit'}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   )
 }
-
