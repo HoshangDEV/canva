@@ -24,8 +24,6 @@ export function Canvas() {
     selectElement,
     updateElement,
     deleteElement,
-    zoom,
-    setZoom,
   } = useEditorStore()
 
   const currentSlide = slides[currentSlideIndex] || slides[0]
@@ -177,34 +175,10 @@ export function Canvas() {
       }
     })
 
-    // Zoom with Ctrl+Scroll
-    canvas.on('mouse:wheel', (opt: any) => {
-      if (opt.e.ctrlKey || opt.e.metaKey) {
-        opt.e.preventDefault()
-        const delta = opt.e.deltaY
-        let newZoom = zoom
-        newZoom *= 0.999 ** delta
-
-        if (newZoom > 3) newZoom = 3
-        if (newZoom < 0.25) newZoom = 0.25
-
-        canvas.setZoom(newZoom)
-        setZoom(newZoom)
-      }
-    })
-
     return () => {
       canvas.dispose()
     }
-  }, [selectElement, updateElement, setZoom])
-
-  // Sync zoom to canvas
-  useEffect(() => {
-    const canvas = fabricCanvasRef.current
-    if (!canvas) return
-    canvas.setZoom(zoom)
-    canvas.renderAll()
-  }, [zoom])
+  }, [selectElement, updateElement])
 
   // Render elements from store
   useEffect(() => {
@@ -279,13 +253,7 @@ export function Canvas() {
 
   return (
     <div className="flex-1 flex items-center justify-center p-8 overflow-auto bg-gray-100">
-      <div
-        className="bg-white shadow-lg"
-        style={{
-          transform: `scale(${zoom})`,
-          transformOrigin: 'center',
-        }}
-      >
+      <div className="bg-white shadow-lg">
         <canvas ref={canvasRef} />
       </div>
     </div>

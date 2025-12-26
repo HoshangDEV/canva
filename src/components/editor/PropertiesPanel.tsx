@@ -1,9 +1,6 @@
-import { useEditorStore } from '@/store/editor-store'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Label } from '@/components/ui/label'
-import { Slider } from '@/components/ui/slider'
 import {
   Select,
   SelectContent,
@@ -11,22 +8,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Slider } from '@/components/ui/slider'
+import { Textarea } from '@/components/ui/textarea'
+import { isRTLText } from '@/lib/utils'
+import { useEditorStore } from '@/store/editor-store'
 import {
-  AlignLeft,
   AlignCenter,
-  AlignRight,
   AlignJustify,
-  AlignVerticalJustifyCenter,
-  AlignVerticalJustifyStart,
-  AlignVerticalJustifyEnd,
-  ArrowUp,
+  AlignLeft,
+  AlignRight,
   ArrowDown,
+  ArrowDownLeft,
+  ArrowDownRight,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
   ArrowUpDown,
-  Trash2,
+  ArrowUpLeft,
+  ArrowUpRight,
   Bold,
   Italic,
+  Move,
+  Trash2,
 } from 'lucide-react'
-import { isRTLText } from '@/lib/utils'
 
 export function PropertiesPanel() {
   const {
@@ -44,7 +48,7 @@ export function PropertiesPanel() {
 
   const currentSlide = slides[currentSlideIndex] || slides[0]
   const selectedElements = currentSlide.elements.filter((el) =>
-    selectedElementIds.includes(el.id)
+    selectedElementIds.includes(el.id),
   )
 
   if (selectedElements.length === 0) {
@@ -58,7 +62,9 @@ export function PropertiesPanel() {
   if (selectedElements.length > 1) {
     return (
       <div className="w-64 bg-white border-l border-gray-200 p-4 overflow-y-auto">
-        <h3 className="font-semibold mb-4">{selectedElements.length} Elements</h3>
+        <h3 className="font-semibold mb-4">
+          {selectedElements.length} Elements
+        </h3>
 
         <div className="space-y-4">
           <div>
@@ -67,50 +73,74 @@ export function PropertiesPanel() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => alignElements('left')}
-                title="Left"
+                onClick={() => alignElements('top-left')}
+                title="Top Left"
               >
-                <AlignLeft className="h-4 w-4" />
+                <ArrowUpLeft />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => alignElements('center-h')}
-                title="Center Horizontal"
+                onClick={() => alignElements('top-center')}
+                title="Top Center"
               >
-                <AlignCenter className="h-4 w-4" />
+                <ArrowUp />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => alignElements('right')}
-                title="Right"
+                onClick={() => alignElements('top-right')}
+                title="Top Right"
               >
-                <AlignRight className="h-4 w-4" />
+                <ArrowUpRight />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => alignElements('top')}
-                title="Top"
+                onClick={() => alignElements('mid-left')}
+                title="Mid Left"
               >
-                <AlignVerticalJustifyStart className="h-4 w-4" />
+                <ArrowLeft />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => alignElements('center-v')}
-                title="Center Vertical"
+                onClick={() => alignElements('mid-center')}
+                title="Mid Center"
               >
-                <AlignVerticalJustifyCenter className="h-4 w-4" />
+                <Move />
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => alignElements('bottom')}
-                title="Bottom"
+                onClick={() => alignElements('mid-right')}
+                title="Mid Right"
               >
-                <AlignVerticalJustifyEnd className="h-4 w-4" />
+                <ArrowRight />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElements('bottom-left')}
+                title="Bottom Left"
+              >
+                <ArrowDownLeft />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElements('bottom-center')}
+                title="Bottom Center"
+              >
+                <ArrowDown />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => alignElements('bottom-right')}
+                title="Bottom Right"
+              >
+                <ArrowDownRight />
               </Button>
             </div>
           </div>
@@ -124,7 +154,7 @@ export function PropertiesPanel() {
                 onClick={bringToFront}
                 title="Bring to Front"
               >
-                <ArrowUp className="h-4 w-4" />
+                <ArrowUp />
               </Button>
               <Button
                 variant="outline"
@@ -132,7 +162,7 @@ export function PropertiesPanel() {
                 onClick={bringForward}
                 title="Bring Forward"
               >
-                <ArrowUpDown className="h-4 w-4" />
+                <ArrowUpDown />
               </Button>
               <Button
                 variant="outline"
@@ -140,7 +170,7 @@ export function PropertiesPanel() {
                 onClick={sendBackward}
                 title="Send Backward"
               >
-                <ArrowDown className="h-4 w-4" />
+                <ArrowDown />
               </Button>
               <Button
                 variant="outline"
@@ -148,7 +178,7 @@ export function PropertiesPanel() {
                 onClick={sendToBack}
                 title="Send to Back"
               >
-                <ArrowDown className="h-4 w-4" />
+                <ArrowDown />
               </Button>
             </div>
           </div>
@@ -171,7 +201,9 @@ export function PropertiesPanel() {
 
   return (
     <div className="w-64 bg-white border-l border-gray-200 p-4 overflow-y-auto">
-      <h3 className="font-semibold mb-4 capitalize">{element.type} Properties</h3>
+      <h3 className="font-semibold mb-4 capitalize">
+        {element.type} Properties
+      </h3>
 
       <div className="space-y-4">
         {/* Common Properties */}
@@ -256,50 +288,74 @@ export function PropertiesPanel() {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alignElements('left')}
-              title="Left"
+              onClick={() => alignElements('top-left')}
+              title="Top Left"
             >
-              <AlignLeft className="h-4 w-4" />
+              <ArrowUpLeft />
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alignElements('center-h')}
-              title="Center Horizontal"
+              onClick={() => alignElements('top-center')}
+              title="Top Center"
             >
-              <AlignCenter className="h-4 w-4" />
+              <ArrowUp />
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alignElements('right')}
-              title="Right"
+              onClick={() => alignElements('top-right')}
+              title="Top Right"
             >
-              <AlignRight className="h-4 w-4" />
+              <ArrowUpRight />
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alignElements('top')}
-              title="Top"
+              onClick={() => alignElements('mid-left')}
+              title="Mid Left"
             >
-              <AlignVerticalJustifyStart className="h-4 w-4" />
+              <ArrowLeft />
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alignElements('center-v')}
-              title="Center Vertical"
+              onClick={() => alignElements('mid-center')}
+              title="Mid Center"
             >
-              <AlignVerticalJustifyCenter className="h-4 w-4" />
+              <Move />
             </Button>
             <Button
               variant="outline"
               size="sm"
-              onClick={() => alignElements('bottom')}
-              title="Bottom"
+              onClick={() => alignElements('mid-right')}
+              title="Mid Right"
             >
-              <AlignVerticalJustifyEnd className="h-4 w-4" />
+              <ArrowRight />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alignElements('bottom-left')}
+              title="Bottom Left"
+            >
+              <ArrowDownLeft />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alignElements('bottom-center')}
+              title="Bottom Center"
+            >
+              <ArrowDown />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => alignElements('bottom-right')}
+              title="Bottom Right"
+            >
+              <ArrowDownRight />
             </Button>
           </div>
         </div>
@@ -314,7 +370,7 @@ export function PropertiesPanel() {
               onClick={bringToFront}
               title="Bring to Front"
             >
-              <ArrowUp className="h-4 w-4" />
+              <ArrowUp />
             </Button>
             <Button
               variant="outline"
@@ -322,7 +378,7 @@ export function PropertiesPanel() {
               onClick={bringForward}
               title="Bring Forward"
             >
-              <ArrowUpDown className="h-4 w-4" />
+              <ArrowUpDown />
             </Button>
             <Button
               variant="outline"
@@ -330,7 +386,7 @@ export function PropertiesPanel() {
               onClick={sendBackward}
               title="Send Backward"
             >
-              <ArrowDown className="h-4 w-4" />
+              <ArrowDown />
             </Button>
             <Button
               variant="outline"
@@ -338,7 +394,7 @@ export function PropertiesPanel() {
               onClick={sendToBack}
               title="Send to Back"
             >
-              <ArrowDown className="h-4 w-4" />
+              <ArrowDown />
             </Button>
           </div>
         </div>
@@ -373,7 +429,9 @@ export function PropertiesPanel() {
                 <SelectContent>
                   <SelectItem value="Arial">Arial</SelectItem>
                   <SelectItem value="Helvetica">Helvetica</SelectItem>
-                  <SelectItem value="Times New Roman">Times New Roman</SelectItem>
+                  <SelectItem value="Times New Roman">
+                    Times New Roman
+                  </SelectItem>
                   <SelectItem value="Courier New">Courier New</SelectItem>
                   <SelectItem value="Verdana">Verdana</SelectItem>
                   <SelectItem value="Georgia">Georgia</SelectItem>
@@ -436,7 +494,9 @@ export function PropertiesPanel() {
               <Label className="mb-2 block">Text Format</Label>
               <div className="flex gap-2">
                 <Button
-                  variant={element.fontWeight === 'bold' ? 'default' : 'outline'}
+                  variant={
+                    element.fontWeight === 'bold' ? 'default' : 'outline'
+                  }
                   size="sm"
                   onClick={() =>
                     updateElement(element.id, {
@@ -446,10 +506,12 @@ export function PropertiesPanel() {
                   }
                   title="Bold"
                 >
-                  <Bold className="h-4 w-4" />
+                  <Bold />
                 </Button>
                 <Button
-                  variant={element.fontStyle === 'italic' ? 'default' : 'outline'}
+                  variant={
+                    element.fontStyle === 'italic' ? 'default' : 'outline'
+                  }
                   size="sm"
                   onClick={() =>
                     updateElement(element.id, {
@@ -459,7 +521,7 @@ export function PropertiesPanel() {
                   }
                   title="Italic"
                 >
-                  <Italic className="h-4 w-4" />
+                  <Italic />
                 </Button>
               </div>
             </div>
@@ -474,34 +536,40 @@ export function PropertiesPanel() {
                     updateElement(element.id, { textAlign: 'left' })
                   }
                 >
-                  <AlignLeft className="h-4 w-4" />
+                  <AlignLeft />
                 </Button>
                 <Button
-                  variant={element.textAlign === 'center' ? 'default' : 'outline'}
+                  variant={
+                    element.textAlign === 'center' ? 'default' : 'outline'
+                  }
                   size="sm"
                   onClick={() =>
                     updateElement(element.id, { textAlign: 'center' })
                   }
                 >
-                  <AlignCenter className="h-4 w-4" />
+                  <AlignCenter />
                 </Button>
                 <Button
-                  variant={element.textAlign === 'right' ? 'default' : 'outline'}
+                  variant={
+                    element.textAlign === 'right' ? 'default' : 'outline'
+                  }
                   size="sm"
                   onClick={() =>
                     updateElement(element.id, { textAlign: 'right' })
                   }
                 >
-                  <AlignRight className="h-4 w-4" />
+                  <AlignRight />
                 </Button>
                 <Button
-                  variant={element.textAlign === 'justify' ? 'default' : 'outline'}
+                  variant={
+                    element.textAlign === 'justify' ? 'default' : 'outline'
+                  }
                   size="sm"
                   onClick={() =>
                     updateElement(element.id, { textAlign: 'justify' })
                   }
                 >
-                  <AlignJustify className="h-4 w-4" />
+                  <AlignJustify />
                 </Button>
               </div>
             </div>
@@ -625,4 +693,3 @@ export function PropertiesPanel() {
     </div>
   )
 }
-

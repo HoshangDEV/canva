@@ -5,6 +5,7 @@ import type {
   AlignmentType,
   EditorStateSnapshot,
 } from '@/types/editor'
+import { CANVAS_CONFIG } from '@/constants'
 
 interface EditorState {
   slides: Slide[]
@@ -13,7 +14,6 @@ interface EditorState {
   history: EditorStateSnapshot[]
   historyIndex: number
   maxHistorySize: number
-  zoom: number
 
   // Actions
   setSlides: (slides: Slide[]) => void
@@ -35,15 +35,8 @@ interface EditorState {
   redo: () => void
   canUndo: () => boolean
   canRedo: () => boolean
-  setZoom: (zoom: number) => void
-  zoomIn: () => void
-  zoomOut: () => void
-  resetZoom: () => void
   saveSnapshot: () => void
 }
-
-const CANVAS_WIDTH = 960
-const CANVAS_HEIGHT = 540
 
 export const useEditorStore = create<EditorState>((set, get) => ({
   slides: [
@@ -57,7 +50,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   history: [],
   historyIndex: -1,
   maxHistorySize: 50,
-  zoom: 1,
 
   setSlides: (slides) => {
     set({ slides })
@@ -207,76 +199,109 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const updates: { id: string; changes: Partial<SlideElement> }[] = []
 
     selectedElements.forEach((element) => {
-      // Calculate the bounding box of the rotated element
+      // Fabric.js uses the center of the element as the origin for left/top
+      // So element.x and element.y represent the center position, not top-left
       const rotation = element.rotation || 0
       const radians = (rotation * Math.PI) / 180
 
-      // Get the corners of the unrotated rectangle (relative to origin)
-      const halfWidth = element.width / 2
-      const halfHeight = element.height / 2
+      // Element dimensions
+      const width = element.width
+      const height = element.height
+      const halfWidth = width / 2
+      const halfHeight = height / 2
 
-      // Element center in canvas coordinates
-      const centerX = element.x + halfWidth
-      const centerY = element.y + halfHeight
+      // Current center position (element.x and element.y are the center)
+      const centerX = element.x
+      const centerY = element.y
 
-      // Calculate the corners after rotation
+      // Calculate the corners of the unrotated rectangle relative to center
+      const corners = [
+        { x: -halfWidth, y: -halfHeight }, // top-left
+        { x: halfWidth, y: -halfHeight },  // top-right
+        { x: halfWidth, y: halfHeight },    // bottom-right
+        { x: -halfWidth, y: halfHeight },   // bottom-left
+      ]
+
+      // Rotate corners around center
       const cos = Math.cos(radians)
       const sin = Math.sin(radians)
-
-      const corners = [
-        { x: -halfWidth, y: -halfHeight },
-        { x: halfWidth, y: -halfHeight },
-        { x: halfWidth, y: halfHeight },
-        { x: -halfWidth, y: halfHeight },
-      ].map(corner => ({
+      const rotatedCorners = corners.map(corner => ({
         x: centerX + (corner.x * cos - corner.y * sin),
         y: centerY + (corner.x * sin + corner.y * cos),
       }))
 
       // Find bounding box of rotated element
-      const minX = Math.min(...corners.map(c => c.x))
-      const maxX = Math.max(...corners.map(c => c.x))
-      const minY = Math.min(...corners.map(c => c.y))
-      const maxY = Math.max(...corners.map(c => c.y))
+      const minX = Math.min(...rotatedCorners.map(c => c.x))
+      const maxX = Math.max(...rotatedCorners.map(c => c.x))
+      const minY = Math.min(...rotatedCorners.map(c => c.y))
+      const maxY = Math.max(...rotatedCorners.map(c => c.y))
 
-      const boundingWidth = maxX - minX
-      const boundingHeight = maxY - minY
-
-      // Current offset from element origin to bounding box origin
-      const offsetX = minX - element.x
-      const offsetY = minY - element.y
+      // Calculate how far the bounding box extends from the center
+      // This tells us how much we need to offset the center to align the bounding box edge
+      const leftOffset = centerX - minX   // Distance from center to left edge of bounding box
+      const rightOffset = maxX - centerX   // Distance from center to right edge of bounding box
+      const topOffset = centerY - minY     // Distance from center to top edge of bounding box
+      const bottomOffset = maxY - centerY  // Distance from center to bottom edge of bounding box
 
       let newX = element.x
       let newY = element.y
 
       switch (alignment) {
-        case 'left':
-          // Position so bounding box left edge is at x=0
-          newX = -offsetX
+        case 'top-left':
+          // Position center so that top-left corner of bounding box is at (0, 0)
+          newX = leftOffset
+          newY = topOffset
           break
-        case 'center-h':
-          // Position so bounding box is centered horizontally
-          newX = (CANVAS_WIDTH - boundingWidth) / 2 - offsetX
+        case 'top-center':
+          // Position center so that top edge is at y=0 and horizontally centered
+          newX = CANVAS_CONFIG.width / 2
+          newY = topOffset
           break
-        case 'right':
-          // Position so bounding box right edge is at canvas right
-          newX = CANVAS_WIDTH - boundingWidth - offsetX
+        case 'top-right':
+          // Position center so that top-right corner of bounding box is at (canvas_width, 0)
+          newX = CANVAS_CONFIG.width - rightOffset
+          newY = topOffset
           break
-        case 'top':
-          // Position so bounding box top edge is at y=0
-          newY = -offsetY
+        case 'mid-left':
+          // Position center so that left edge is at x=0 and vertically centered
+          newX = leftOffset
+          newY = CANVAS_CONFIG.height / 2
           break
-        case 'center-v':
-          // Position so bounding box is centered vertically
-          newY = (CANVAS_HEIGHT - boundingHeight) / 2 - offsetY
+        case 'mid-center':
+          // Position center at canvas center
+          newX = CANVAS_CONFIG.width / 2
+          newY = CANVAS_CONFIG.height / 2
           break
-        case 'bottom':
-          // Position so bounding box bottom edge is at canvas bottom
-          newY = CANVAS_HEIGHT - boundingHeight - offsetY
+        case 'mid-right':
+          // Position center so that right edge is at x=canvas_width and vertically centered
+          newX = CANVAS_CONFIG.width - rightOffset
+          newY = CANVAS_CONFIG.height / 2
+          break
+        case 'bottom-left':
+          // Position center so that bottom-left corner of bounding box is at (0, canvas_height)
+          newX = leftOffset
+          newY = CANVAS_CONFIG.height - bottomOffset
+          break
+        case 'bottom-center':
+          // Position center so that bottom edge is at y=canvas_height and horizontally centered
+          newX = CANVAS_CONFIG.width / 2
+          newY = CANVAS_CONFIG.height - bottomOffset
+          break
+        case 'bottom-right':
+          // Position center so that bottom-right corner of bounding box is at (canvas_width, canvas_height)
+          newX = CANVAS_CONFIG.width - rightOffset
+          newY = CANVAS_CONFIG.height - bottomOffset
           break
       }
 
-      updates.push({ id: element.id, changes: { x: newX, y: newY } })
+      // Round to avoid floating point precision issues
+      updates.push({ 
+        id: element.id, 
+        changes: { 
+          x: Math.round(newX * 100) / 100,
+          y: Math.round(newY * 100) / 100,
+        } 
+      })
     })
 
     get().updateElements(updates)
@@ -458,24 +483,6 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     return historyIndex < history.length - 1
   },
 
-  setZoom: (zoom) => {
-    set({ zoom: Math.max(0.25, Math.min(3, zoom)) })
-  },
-
-  zoomIn: () => {
-    const { zoom } = get()
-    get().setZoom(zoom * 1.2)
-  },
-
-  zoomOut: () => {
-    const { zoom } = get()
-    get().setZoom(zoom / 1.2)
-  },
-
-  resetZoom: () => {
-    set({ zoom: 1 })
-  },
-
   saveSnapshot: () => {
     const { slides, currentSlideIndex, selectedElementIds, history, historyIndex, maxHistorySize } = get()
 
@@ -502,4 +509,5 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     })
   },
 }))
+
 

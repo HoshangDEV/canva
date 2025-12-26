@@ -2,12 +2,15 @@
 export type ElementType = 'text' | 'shape' | 'image'
 
 export type AlignmentType =
-  | 'left'
-  | 'center-h'
-  | 'right'
-  | 'top'
-  | 'center-v'
-  | 'bottom'
+  | 'top-left'
+  | 'top-center'
+  | 'top-right'
+  | 'mid-left'
+  | 'mid-center'
+  | 'mid-right'
+  | 'bottom-left'
+  | 'bottom-center'
+  | 'bottom-right'
 
 // Slide element interface
 export interface SlideElement {

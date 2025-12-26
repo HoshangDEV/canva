@@ -8,9 +8,6 @@ import {
   Type,
   Square,
   Image as ImageIcon,
-  ZoomIn,
-  ZoomOut,
-  RotateCcw,
 } from 'lucide-react'
 import { AIDialog } from './AIDialog'
 
@@ -21,10 +18,6 @@ export function Toolbar() {
     canUndo,
     canRedo,
     addElement,
-    zoomIn,
-    zoomOut,
-    resetZoom,
-    zoom,
   } = useEditorStore()
 
   const [aiDialogOpen, setAIDialogOpen] = useState(false)
@@ -143,21 +136,6 @@ export function Toolbar() {
           <ImageIcon />
           Add Image
         </Button>
-
-        <div className="w-px h-6 bg-gray-300 mx-1" />
-
-        <Button variant="outline" size="sm" onClick={zoomOut}>
-          <ZoomOut />
-        </Button>
-        <Button variant="outline" size="sm" onClick={resetZoom}>
-          <RotateCcw />
-        </Button>
-        <Button variant="outline" size="sm" onClick={zoomIn}>
-          <ZoomIn />
-        </Button>
-        <div className="px-2 text-sm text-gray-600 min-w-[60px] text-center">
-          {Math.round(zoom * 100)}%
-        </div>
       </div>
 
       <AIDialog open={aiDialogOpen} onOpenChange={setAIDialogOpen} />
